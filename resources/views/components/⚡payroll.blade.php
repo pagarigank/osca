@@ -6,7 +6,7 @@
             <h2 class="page-title">Payroll</h2>
 
             @if($selected_funding_id)
-            <a href="{{ route('print.payroll', ['funding_id' => $selected_funding_id, 'barangay_id' => $selected_barangay_id, 'purok_id' => $selected_purok_id, 'purok_leader_id' => $selected_purok_leader_id]) }}" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+            <a href="{{ route('print.payroll', ['funding_id' => $selected_funding_id]) }}" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
                 Print Report
             </a>
@@ -128,6 +128,7 @@
                         <th>Barangay</th>
                         <th>Purok</th>
                         <th style="text-align: right;">Amount</th>
+                        <th style="text-align: center;">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -139,10 +140,16 @@
                         <td>{{ $ben->seniorCitizen->barangay->name ?? 'N/A' }}</td>
                         <td>{{ $ben->seniorCitizen->purok ?? 'N/A' }}</td>
                         <td style="text-align: right; font-weight: 600;">₱{{ number_format($ben->funding->amount ?? 0, 2) }}</td>
+                        <td style="text-align: center;">
+                            <a href="{{ route('print.payroll.stub', ['funding_id' => $selected_funding_id, 'senior_citizen_id' => $ben->seniorCitizen->id]) }}" target="_blank" class="btn btn-success btn-sm" style="display: inline-flex; align-items: center; gap: 0.25rem; padding: 0.25rem 0.5rem; font-size: 0.75rem;">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="6" height="6" rx="1"></rect><path d="M11 12H9v-2h2v2zm0 4h2v-2h-2v2zm0-8h2V5h-2v2z"></path></svg>
+                                Stub
+                            </a>
+                        </td>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="6" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
+                        <td colspan="7" style="text-align: center; padding: 3rem; color: var(--text-secondary);">
                             @if($selected_funding_id)
                                 No beneficiaries found for this funding source.
                                 @if($selected_barangay_id || $selected_purok_id)
@@ -158,7 +165,7 @@
                 @if($beneficiaries->count() > 0)
                 <tfoot>
                     <tr style="background: #f9fafb; font-weight: 700;">
-                        <td colspan="5" style="padding: 0.75rem 1rem; font-size: 0.85rem; color: #374151;">
+                        <td colspan="6" style="padding: 0.75rem 1rem; font-size: 0.85rem; color: #374151;">
                             Total: {{ $occupiedSlots }} / {{ $totalSlots }} slots filled
                             &nbsp;&mdash;&nbsp;
                             @if($availableSlots > 0)
@@ -167,9 +174,7 @@
                                 <span style="color: #ef4444;">Fully occupied</span>
                             @endif
                         </td>
-                        <td style="text-align: right; padding: 0.75rem 1rem; font-size: 0.85rem; color: #374151;">
-                            ₱{{ number_format($beneficiaries->sum(fn($b) => $b->funding->amount ?? 0), 2) }}
-                        </td>
+                        <td></td>
                     </tr>
                 </tfoot>
                 @endif

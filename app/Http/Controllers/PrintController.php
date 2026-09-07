@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\SeniorCitizen;
+use App\Models\SeniorCitizenFunding;
 use chillerlan\QRCode\QRCode;
 use chillerlan\QRCode\QROptions;
 use chillerlan\QRCode\Common\EccLevel;
@@ -44,5 +45,22 @@ class PrintController extends Controller
             ->get();
 
         return view('pages.print-payroll', compact('funding', 'beneficiaries'));
+    }
+
+    /**
+     * Display the payroll claim stub for a specific beneficiary.
+     * This format combines the front of the ID with a larger QR code
+     * for verification purposes.
+     */
+    public function printPayrollClaimStub($funding_id, $seniorCitizenId)
+    {
+        $funding = \App\Models\Funding::findOrFail($funding_id);
+        $beneficiary = SeniorCitizenFunding::with('seniorCitizen.barangay', 'seniorCitizen.gender', 'funding')
+            ->where('funding_id', $funding_id)
+            ->where('senior_citizen_id', $seniorCitizenId)
+            ->whereHas('seniorCitizen')
+            ->firstOrFail();
+
+        return view('pages.print-payroll-claim-stub', compact('funding', 'beneficiary'));
     }
 }

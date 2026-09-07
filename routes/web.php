@@ -61,7 +61,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/print/id/{id}', [\App\Http\Controllers\PrintController::class, 'printId'])->name('print.id');
 
     Route::get('/payroll',          \App\Livewire\Payroll::class);
-    Route::get('/print/payroll/{funding_id}', [\App\Http\Controllers\PrintController::class, 'printPayroll'])->name('print.payroll');
+        Route::get('/print/payroll/{funding_id}', [App\Http\Controllers\PrintController::class, 'printPayroll'])->name('print.payroll');
+        Route::get('/print/payroll-stub/{funding_id}/{senior_citizen_id}', [App\Http\Controllers\PrintController::class, 'printPayrollClaimStub'])->name('print.payroll.stub');
     Route::get('/reports',          fn() => view('pages.reports'));
     Route::get('/messages',         \App\Livewire\AdminChat::class)->name('messages');
     Route::get('/payroll-provider', \App\Livewire\PayrollProviderMaintenance::class);

@@ -3,143 +3,534 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payroll Report - {{ $funding->provider }} {{ $funding->fund_source }}</title>
+    <title>OSCA Payroll Claim Stubs - {{ $funding->provider }} {{ $funding->fund_source }}</title>
     <style>
-        body {
-            font-family: Arial, sans-serif;
-            font-size: 12px;
-            color: #333;
+        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@300;400;500;600;700&display=swap');
+
+        /* ID Card dimensions: 86mm x 54mm */
+        :root {
+            --card-w: 86mm;
+            --card-h: 54mm;
+            --black:  #111111;
+            --gray:   #555555;
+            --light:  #f5f5f5;
+            --border: #aaaaaa;
+        }
+
+        * { box-sizing: border-box; }
+
+        html, body {
             margin: 0;
-            padding: 20px;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: #e8e8e8;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .header h1 {
-            margin: 0 0 5px;
-            font-size: 18px;
-            text-transform: uppercase;
-        }
-        .header p {
-            margin: 0;
-            font-size: 14px;
-        }
-        .info-section {
-            margin-bottom: 20px;
-        }
-        .info-section strong {
-            display: inline-block;
-            width: 120px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-        th, td {
-            border: 1px solid #000;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-            font-weight: bold;
-        }
-        .text-right {
-            text-align: right;
-        }
-        .text-center {
-            text-align: center;
-        }
-        .footer {
-            margin-top: 40px;
+
+        /* Screen preview wrapper - one stub per row */
+        .preview-wrap {
             display: flex;
-            justify-content: space-between;
+            flex-direction: column;
+            align-items: center;
+            gap: 8mm;
+            padding: 10mm;
         }
-        .signature-box {
-            width: 200px;
+
+        /* SINGLE STUB WRAPPER - each stub is full page size */
+        .stub-wrapper {
+            width: 100%;
+            max-width: 86mm;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4mm;
+        }
+
+        .stub-page {
+            width: var(--card-w);
+            height: var(--card-h);
+            background: #ffffff;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 3px 14px rgba(0,0,0,0.18);
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* WATERMARK */
+        .watermark {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        .watermark span {
+            font-size: 12pt;
+            font-weight: 900;
+            color: rgba(0,0,0,0.04);
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            white-space: nowrap;
+            transform: rotate(-30deg);
+            line-height: 1;
+            font-family: 'Inter', sans-serif;
+        }
+        .watermark-logo {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            background-size: 32mm;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.07;
+        }
+
+        /* CONTENT LAYER */
+        .content-layer {
+            position: relative;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* HEADER */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1.5mm 2mm 1mm 2mm;
+            border-bottom: 0.7mm solid #1a1a1a;
+        }
+
+        .header-logo {
+            width: 13mm;
+            height: 13mm;
+            object-fit: contain;
+            flex-shrink: 0;
+        }
+
+        .header-text {
+            text-align: center;
+            flex: 1;
+            padding: 0 2mm;
+        }
+        .header-text .republic {
+            font-size: 5.5pt;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: var(--black);
+            line-height: 1.4;
+        }
+        .header-text .city-name {
+            font-size: 7.5pt;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--black);
+            line-height: 1.4;
+        }
+
+        /* BODY */
+        .body {
+            display: flex;
+            flex: 1;
+            padding: 1.5mm 2mm 1.5mm 2mm;
+            gap: 2mm;
+        }
+
+        /* LEFT COLUMN: Photo + Signature */
+        .left {
+            width: 21mm;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0;
+            flex-shrink: 0;
+        }
+
+        .photo-box {
+            width: 21mm;
+            height: 24mm;
+            border: 0.5mm solid var(--border);
+            background: var(--light);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+        .photo-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .photo-placeholder {
+            font-size: 4pt;
+            color: #999;
+            text-align: center;
+            padding: 1mm;
+        }
+
+        .sig-area {
+            width: 21mm;
+            margin-top: 2mm;
             text-align: center;
         }
-        .signature-line {
-            border-top: 1px solid #000;
-            margin-top: 40px;
-            padding-top: 5px;
+        .sig-box {
+            width: 21mm;
+            height: 7mm;
+            border-bottom: 0.4mm solid var(--black);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 0.5mm;
+            overflow: hidden;
         }
+        .sig-box img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+        .sig-label {
+            font-size: 4pt;
+            color: var(--gray);
+            margin-top: 0.5mm;
+            letter-spacing: 0.5px;
+        }
+
+        /* RIGHT COLUMN: Details */
+        .right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            padding-left: 1mm;
+        }
+
+        .id-number-row {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 1mm;
+        }
+        .id-number-badge {
+            font-size: 6.5pt;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            color: var(--black);
+        }
+
+        .name-block {
+            margin-bottom: 1mm;
+        }
+        .name-field {
+            margin-bottom: 1mm;
+        }
+        .name-field-label {
+            font-size: 4pt;
+            color: var(--gray);
+            font-style: italic;
+            line-height: 1.1;
+            display: block;
+        }
+        .name-field-value {
+            font-size: 8pt;
+            font-weight: 700;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--black);
+            line-height: 1.1;
+            display: block;
+        }
+        .name-field-value.small {
+            font-size: 7pt;
+        }
+
+        .details-row {
+            display: flex;
+            gap: 2mm;
+            margin-bottom: 0.5mm;
+        }
+        .detail-cell {
+            display: flex;
+            flex-direction: column;
+        }
+        .detail-cell.dob-cell { flex: 2; }
+        .detail-cell.gender-cell { flex: 1; }
+        .detail-cell.issue-cell { flex: 2; }
+
+        .detail-label {
+            font-size: 3.8pt;
+            color: var(--gray);
+            font-style: italic;
+            line-height: 1.2;
+        }
+        .detail-value {
+            font-size: 6pt;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            color: var(--black);
+        }
+
+        /* PAYROLL INFO */
+        .payroll-section {
+            margin-top: 1mm;
+            padding-top: 1mm;
+            border-top: 0.3mm solid #aaa;
+        }
+        .payroll-label {
+            font-size: 4pt;
+            color: var(--gray);
+            font-style: italic;
+            margin-bottom: 0.3mm;
+        }
+        .payroll-value {
+            font-size: 7pt;
+            font-weight: 600;
+            color: var(--black);
+            line-height: 1.2;
+        }
+        .payroll-amount {
+            color: #16a34a;
+            font-weight: 700;
+        }
+
+        /* QR CODE - larger for scanning */
+        .qr-section {
+            padding: 1mm 2mm 1mm 2mm;
+            border-top: 0.3mm solid #aaa;
+            display: flex;
+            align-items: center;
+            gap: 2mm;
+        }
+
+        .qr-box {
+            width: 14mm;
+            height: 14mm;
+            border: 0.4mm solid var(--border);
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.5mm;
+            flex-shrink: 0;
+        }
+        .qr-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        .qr-info {
+            font-size: 5.5pt;
+            color: var(--black);
+            font-weight: 600;
+        }
+        .qr-info small {
+            display: block;
+            font-size: 3.8pt;
+            color: var(--gray);
+            font-weight: 400;
+            margin-top: 0.2mm;
+        }
+
+        /* Print Rules - multiple stubs per page */
+        @page {
+            size: portset 86mm 54mm;
+            margin: 0;
+        }
+
         @media print {
-            body { padding: 0; }
-            .no-print { display: none; }
-            @page { margin: 1cm; size: portrait; }
+            body {
+                background: none;
+                padding: 0;
+                margin: 0;
+            }
+            .preview-wrap {
+                display: flex;
+                flex-direction: column;
+                gap: 5mm;
+            }
+            .stub-wrapper {
+                page-break-inside: avoid;
+            }
+            .stub-page {
+                box-shadow: none;
+            }
+            .stub-page + .stub-wrapper {
+                page-break-before: always;
+            }
+            .screen-label {
+                display: none !important;
+            }
         }
+
+        /* Screen label */
+        .screen-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 9pt;
+            color: #666;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            text-align: center;
+            margin-bottom: 3mm;
+        }
+        @media print { .screen-label { display: none; } }
     </style>
 </head>
-<body>
+<body onload="window.print()">
 
-    <div class="no-print" style="margin-bottom: 20px; text-align: right;">
-        <button onclick="window.print()" style="padding: 10px 20px; font-size: 14px; cursor: pointer; background: #2563eb; color: white; border: none; border-radius: 4px;">Print Now</button>
-    </div>
+<div class="preview-wrap">
+    <div class="screen-label">Payroll Claim Stubs</div>
+    
+    @foreach($beneficiaries as $ben)
+    <div class="stub-wrapper">
+        <div class="stub-page">
 
-    <div class="header">
-        <h1>Office of the Senior Citizens Affairs (OSCA)</h1>
-        <p>Payroll Report for Beneficiaries</p>
-    </div>
+           {{-- Watermark --}}
+            <div class="watermark-logo" style="background-image: url('{{ asset('images/mabalacat_seal.png') }}');"></div>
 
-    <div class="info-section">
-        <div><strong>Provider:</strong> {{ $funding->provider }}</div>
-        <div><strong>Fund Source:</strong> {{ $funding->fund_source }}</div>
-        <div><strong>Effective Date:</strong> {{ $funding->effective_date ? \Carbon\Carbon::parse($funding->effective_date)->format('F d, Y') : 'N/A' }}</div>
-        <div><strong>Base Amount:</strong> Php {{ number_format($funding->amount, 2) }}</div>
-    </div>
+            <div class="content-layer">
+                
+                {{-- Header --}}
+                <div class="header">
+                    <img src="{{ asset('images/mabalacat_seal.png') }}" class="header-logo" alt="Mabalacat City Seal">
+                    <div class="header-text">
+                        <div class="republic">OFFICE OF THE SENIOR CITIZENS AFFAIRS</div>
+                        <div class="city-name">MABALACAT CITY</div>
+                    </div>
+                    <img src="{{ asset('images/osca_logo.png') }}" class="header-logo" alt="OSCA Logo">
+                </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th style="width: 50px;" class="text-center">#</th>
-                <th style="width: 150px;">ID Number</th>
-                <th>Name</th>
-                <th>Barangay</th>
-                <th style="width: 100px;" class="text-right">Amount</th>
-                <th style="width: 150px;" class="text-center">Signature</th>
-            </tr>
-        </thead>
-        <tbody>
-            @php $totalAmount = 0; @endphp
-            @forelse($beneficiaries as $index => $ben)
-                @php $amount = $ben->funding->amount ?? 0; $totalAmount += $amount; @endphp
-                <tr>
-                    <td class="text-center">{{ $index + 1 }}</td>
-                    <td>{{ $ben->seniorCitizen->id_number ?? $ben->seniorCitizen->new_id_number }}</td>
-                    <td>{{ strtoupper($ben->seniorCitizen->last_name) }}, {{ strtoupper($ben->seniorCitizen->first_name) }} {{ $ben->seniorCitizen->middle_name }}</td>
-                    <td>{{ $ben->seniorCitizen->barangay->name ?? 'N/A' }}</td>
-                    <td class="text-right">{{ number_format($amount, 2) }}</td>
-                    <td></td>
-                </tr>
-            @empty
-                <tr>
-                    <td colspan="6" class="text-center">No beneficiaries found for this funding source.</td>
-                </tr>
-            @endforelse
-        </tbody>
-        <tfoot>
-            <tr>
-                <th colspan="4" class="text-right">TOTAL:</th>
-                <th class="text-right">{{ number_format($totalAmount, 2) }}</th>
-                <th></th>
-            </tr>
-        </tfoot>
-    </table>
+                {{-- Body --}}
+                <div class="body">
+                    
+                    {{-- Left Column: Photo + Signature --}}
+                    <div class="left">
+                        <div class="photo-box">
+                            @if($ben->seniorCitizen->id_picture)
+                                <img src="{{ Storage::url($ben->seniorCitizen->id_picture) }}" alt="Photo">
+                            @else
+                                <div class="photo-placeholder">Photo<br>Here</div>
+                            @endif
+                        </div>
+                        <div class="sig-area">
+                            <div class="sig-box">
+                                @if($ben->seniorCitizen->signature)
+                                    <img src="{{ Storage::url($ben->seniorCitizen->signature) }}" alt="Signature">
+                                @endif
+                            </div>
+                            <div class="sig-label">Signature</div>
+                        </div>
+                    </div>
 
-    <div class="footer">
-        <div class="signature-box">
-            <div class="signature-line">Prepared By</div>
+                    {{-- Right Column: Details --}}
+                    <div class="right">
+                        
+                        {{-- ID Number --}}
+                        <div class="id-number-row">
+                            <span class="id-number-badge">{{ $ben->seniorCitizen->id_number ?? $ben->seniorCitizen->new_id_number }}</span>
+                        </div>
+
+                        {{-- Name Block --}}
+                        <div class="name-block">
+                            <div class="name-field">
+                                <span class="name-field-label">Last Name</span>
+                                <span class="name-field-value">{{ strtoupper($ben->seniorCitizen->last_name) }}@if($ben->seniorCitizen->suffix) {{ strtoupper($ben->seniorCitizen->suffix) }}@endif</span>
+                            </div>
+                            <div class="name-field">
+                                <span class="name-field-label">First Name</span>
+                                <span class="name-field-value">{{ strtoupper($ben->seniorCitizen->first_name) }}</span>
+                            </div>
+                            <div class="name-field">
+                                <span class="name-field-label">Middle Name</span>
+                                <span class="name-field-value small">{{ $ben->seniorCitizen->middle_name ? strtoupper($ben->seniorCitizen->middle_name) : '—' }}</span>
+                            </div>
+                        </div>
+
+                        {{-- DOB / Gender / Issue Date --}}
+                        <div class="details-row">
+                            <div class="detail-cell dob-cell">
+                                <span class="detail-label">DOB</span>
+                                <span class="detail-value">
+                                    {{ $ben->seniorCitizen->date_of_birth ? $ben->seniorCitizen->date_of_birth->format('M d, Y') : 'N/A' }}
+                                </span>
+                            </div>
+                            <div class="detail-cell gender-cell">
+                                <span class="detail-label">Sex</span>
+                                <span class="detail-value">
+                                    {{ strtoupper(rtrim(optional($ben->seniorCitizen->gender)->name ?? 'N/A', '0123456789')) }}
+                                </span>
+                            </div>
+                            <div class="detail-cell issue-cell">
+                                <span class="detail-label">Issue</span>
+                                <span class="detail-value">
+                                    {{ $ben->seniorCitizen->effective_date ? $ben->seniorCitizen->effective_date->format('M d, Y') : 'N/A' }}
+                                </span>
+                            </div>
+                        </div>
+
+                        {{-- Address --}}
+                        <div class="address-block">
+                            <span class="address-label">Address</span>
+                            <div class="address-value">
+                                @php
+                                    $parts = array_filter([
+                                        $ben->seniorCitizen->house_no,
+                                        $ben->seniorCitizen->street,
+                                        $ben->seniorCitizen->purok_name ? 'Purok ' . $ben->seniorCitizen->purok_name : null,
+                                        optional($ben->seniorCitizen->barangay)->name ? 'Brgy. ' . $ben->seniorCitizen->barangay->name : null,
+                                        $ben->seniorCitizen->city_municipality,
+                                        $ben->seniorCitizen->province,
+                                    ]);
+                                    echo implode(', ', $parts);
+                                @endphp
+                            </div>
+                        </div>
+
+                        {{-- Payroll Info --}}
+                        <div class="payroll-section">
+                            <div class="payroll-label">Fund Provider</div>
+                            <div class="payroll-value">{{ $funding->provider ?? 'N/A' }}</div>
+                            
+                            <div class="payroll-label" style="margin-top: 1mm;">Amount</div>
+                            <div class="payroll-value payroll-amount">₱{{ number_format($ben->funding->amount ?? 0, 2) }}</div>
+                        </div>
+                    </div>
+                </div>
+
+                {{-- QR Code for Verification --}}
+                @php
+                    $qrToken = $ben->seniorCitizen->qr_token;
+                    $qrContent = 'OSCA Payroll Claim|ID:' . ($ben->seniorCitizen->id_number ?? $ben->seniorCitizen->new_id_number) . '|Token:' . $qrToken;
+                @endphp
+
+                <div class="qr-section">
+                    <div class="qr-box">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode($qrContent) }}" alt="Payroll QR Code">
+                    </div>
+                    <div class="qr-info">
+                        Verify Online
+                        <small>Scan QR code for authenticity</small>
+                    </div>
+                </div>
+
+            </div>
         </div>
-        <div class="signature-box">
-            <div class="signature-line">Verified By</div>
-        </div>
-        <div class="signature-box">
-            <div class="signature-line">Approved By</div>
-        </div>
     </div>
+    @endforeach
 
+</div>
 </body>
 </html>
