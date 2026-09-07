@@ -54,7 +54,7 @@ class PrintController extends Controller
     public function printPayrollClaimStubs($funding_id)
     {
         $funding = \App\Models\Funding::findOrFail($funding_id);
-        $beneficiaries = SeniorCitizenFunding::with('seniorCitizen.barangay', 'seniorCitizen.gender')
+        $beneficiaries = SeniorCitizenFunding::with(['seniorCitizen.barangay', 'seniorCitizen.gender', 'seniorCitizen.purokLeader'])
             ->where('funding_id', $funding_id)
             ->whereHas('seniorCitizen')
             ->get();
@@ -70,7 +70,7 @@ class PrintController extends Controller
     public function printPayrollClaimStub($funding_id, $seniorCitizenId)
     {
         $funding = \App\Models\Funding::findOrFail($funding_id);
-        $beneficiary = SeniorCitizenFunding::with('seniorCitizen.barangay', 'seniorCitizen.gender', 'funding')
+        $beneficiary = SeniorCitizenFunding::with(['seniorCitizen.barangay', 'seniorCitizen.gender', 'seniorCitizen.purokLeader', 'funding'])
             ->where('funding_id', $funding_id)
             ->where('senior_citizen_id', $seniorCitizenId)
             ->whereHas('seniorCitizen')

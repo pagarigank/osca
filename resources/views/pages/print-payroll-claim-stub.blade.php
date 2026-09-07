@@ -28,14 +28,6 @@
             print-color-adjust: exact;
         }
 
-        .preview-wrap {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4mm;
-            padding: 10mm;
-        }
-
         .stub-page {
             width: var(--card-w);
             height: var(--card-h);
@@ -126,6 +118,33 @@
             line-height: 1.4;
         }
 
+        /* Print stub header - location info */
+        .print-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1mm 2mm;
+            border-bottom: 0.5mm solid var(--border);
+            font-size: 5.5pt;
+            color: var(--black);
+            flex-wrap: wrap;
+            gap: 1mm;
+        }
+        .print-header .header-item {
+            white-space: nowrap;
+            text-align: center;
+        }
+        .print-header .header-label {
+            font-weight: 600;
+            text-transform: uppercase;
+            color: var(--gray);
+            display: block;
+            font-size: 4.5pt;
+        }
+        .print-header .header-value {
+            color: var(--black);
+        }
+
         .body {
             display: flex;
             flex: 1;
@@ -213,8 +232,8 @@
 
         .name-block {
             display: flex;
-            align-items: center;
-            gap: 1mm;
+            align-items: flex-start;
+            gap: 2mm;
             margin-bottom: 1mm;
         }
         .name-labels {
@@ -245,7 +264,7 @@
             font-size: 7pt;
         }
 
-        /* QR Code container - proportional to name block height */
+        /* QR Code container - enlarged */
         .qr-container {
             display: flex;
             flex-direction: column;
@@ -253,14 +272,14 @@
             justify-content: center;
         }
         .qr-box {
-            width: 10mm;
-            height: 10mm;
-            border: 0.3mm solid var(--border);
+            width: 12mm;
+            height: 12mm;
+            border: 0.4mm solid var(--border);
             background: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 0.3mm;
+            padding: 0.5mm;
         }
         .qr-box img {
             width: 100%;
@@ -268,10 +287,10 @@
             object-fit: contain;
         }
         .qr-label {
-            font-size: 3pt;
+            font-size: 4pt;
             color: var(--gray);
             text-align: center;
-            margin-top: 0.3mm;
+            margin-top: 0.4mm;
             line-height: 1.1;
         }
 
@@ -302,6 +321,23 @@
             color: var(--black);
         }
 
+        .address-block {
+            margin-top: 0;
+        }
+        .address-label {
+            font-size: 3.8pt;
+            color: var(--gray);
+            font-style: italic;
+            line-height: 1.2;
+        }
+        .address-value {
+            font-size: 5.5pt;
+            font-weight: 600;
+            color: var(--black);
+            line-height: 1.3;
+            text-transform: uppercase;
+        }
+
         .payroll-section {
             margin-top: auto;
             padding-top: 1mm;
@@ -323,6 +359,13 @@
             font-weight: 700;
         }
 
+        /* Running line between stubs */
+        .print-line {
+            width: 80%;
+            border-top: 0.5mm dashed var(--gray);
+            margin: 2mm auto;
+        }
+
         @page {
             size: 86mm 54mm;
             margin: 0;
@@ -335,43 +378,19 @@
                 margin: 0;
                 width: 86mm;
             }
-            .preview-wrap {
-                display: block;
-                padding: 0;
-                gap: 0;
-                background: none;
-                margin: 0;
-                width: 86mm;
-            }
-            .preview-wrap > .stub-page {
-                page-break-inside: avoid;
-            }
             .stub-page {
                 box-shadow: none;
+                page-break-before: always;
             }
-            .screen-label {
-                display: none !important;
+            .stub-page:first-child {
+                page-break-before: avoid;
             }
         }
-
-        .screen-label {
-            font-family: 'Inter', sans-serif;
-            font-size: 9pt;
-            color: #666;
-            font-weight: 600;
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            text-align: center;
-            margin-bottom: 3mm;
-        }
-        @media print { .screen-label { display: none; } }
     </style>
 </head>
-<body onload="window.print()">
+<body>
 
-<div class="preview-wrap">
-    <div class="screen-label">Payroll Claim Stub</div>
-    <div class="stub-page">
+<div class="stub-page">
 
         {{-- Mabalacat City Seal Watermark --}}
         <div class="watermark-logo" style="background-image: url('{{ asset('images/mabalacat_seal.png') }}');"></div>
@@ -386,6 +405,26 @@
                     <div class="city-name">MABALACAT CITY</div>
                 </div>
                 <img src="{{ asset('images/osca_logo.png') }}" class="header-logo" alt="OSCA Logo">
+            </div>
+
+            {{-- Print Stub Header - Location Info --}}
+            <div class="print-header">
+                <div class="header-item">
+                    <span class="header-label">Run Date</span>
+                    <span class="header-value">{{ now()->format('M d, Y') }}</span>
+                </div>
+                <div class="header-item">
+                    <span class="header-label">Barangay</span>
+                    <span class="header-value">{{ $beneficiary->seniorCitizen->barangay->name ?? 'N/A' }}</span>
+                </div>
+                <div class="header-item">
+                    <span class="header-label">Purok</span>
+                    <span class="header-value">{{ $beneficiary->seniorCitizen->purok_name ?? 'N/A' }}</span>
+                </div>
+                <div class="header-item">
+                    <span class="header-label">Purok Leader</span>
+                    <span class="header-value">{{ $beneficiary->seniorCitizen->purokLeader ? $beneficiary->seniorCitizen->purokLeader->last_name . ', ' . $beneficiary->seniorCitizen->purokLeader->first_name : 'N/A' }}</span>
+                </div>
             </div>
 
             {{-- Body --}}
@@ -442,7 +481,7 @@
                         @endphp
                         <div class="qr-container">
                             <div class="qr-box">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($qrContent) }}" alt="QR Code">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode($qrContent) }}" alt="QR Code">
                             </div>
                             <div class="qr-label">Verify</div>
                         </div>
@@ -501,6 +540,3 @@
 
         </div>
     </div>
-</div>
-</body>
-</html>

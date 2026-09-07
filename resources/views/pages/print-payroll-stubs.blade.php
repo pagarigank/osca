@@ -12,8 +12,6 @@
             --card-h: 54mm;
             --black:  #111111;
             --gray:   #555555;
-            --light:  #f5f5f5;
-            --border: #aaaaaa;
         }
 
         * { box-sizing: border-box; }
@@ -27,11 +25,18 @@
 
         .screen-label {
             font-family: 'Inter', sans-serif;
-            font-size: 12pt;
+            font-size: 14pt;
             color: #333;
             font-weight: 600;
             text-align: center;
             margin-bottom: 10mm;
+            text-transform: uppercase;
+        }
+
+        .print-line {
+            width: 80%;
+            border-top: 1px dashed var(--gray);
+            margin: 8mm auto;
         }
 
         @media print {
@@ -43,23 +48,23 @@
             .screen-label {
                 display: none;
             }
-            .stub-wrapper {
-                page-break-before: always;
-            }
-            .stub-wrapper:first-child {
-                page-break-before: avoid;
+            .print-line {
+                width: 80%;
+                border-top: 1px dashed #999;
+                margin: 5mm auto;
             }
         }
     </style>
 </head>
-<body onload="window.print()">
+<body>
 
     <div class="screen-label">Payroll Claim Stubs - {{ $funding->provider }}</div>
     
-    @foreach($beneficiaries as $ben)
-    <div class="stub-wrapper">
+    @foreach($beneficiaries as $index => $ben)
         @include('pages.print-payroll-claim-stub', ['beneficiary' => $ben, 'funding' => $funding])
-    </div>
+        @if(!$loop->last)
+            <div class="print-line"></div>
+        @endif
     @endforeach
 
 </body>
