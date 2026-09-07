@@ -6,10 +6,16 @@
             <h2 class="page-title">Payroll</h2>
 
             @if($selected_funding_id)
-            <a href="{{ route('print.payroll', ['funding_id' => $selected_funding_id, 'barangay_id' => $selected_barangay_id, 'purok_id' => $selected_purok_id, 'purok_leader_id' => $selected_purok_leader_id]) }}" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
-                Print Report
-            </a>
+            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                <a href="{{ route('print.payroll', ['funding_id' => $selected_funding_id, 'barangay_id' => $selected_barangay_id, 'purok_id' => $selected_purok_id, 'purok_leader_id' => $selected_purok_leader_id]) }}" target="_blank" class="btn btn-primary" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"></polyline><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"></path><rect x="6" y="14" width="12" height="8"></rect></svg>
+                    Print Report
+                </a>
+                <a href="{{ route('print.payroll.stubs', ['funding_id' => $selected_funding_id]) }}" target="_blank" class="btn btn-success" style="display: inline-flex; align-items: center; gap: 0.5rem; text-decoration: none;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="6" height="6" rx="1"></rect><path d="M11 12H9v-2h2v2zm0 4h2v-2h-2v2zm0-8h2V5h-2v2z"></path></svg>
+                    Print Stubs
+                </a>
+            </div>
             @endif
         </div>
 

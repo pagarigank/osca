@@ -48,6 +48,21 @@ class PrintController extends Controller
     }
 
     /**
+     * Display the payroll claim stubs layout for ALL beneficiaries of a funding source.
+     * Each beneficiary gets an individual ID-card format stub with QR code.
+     */
+    public function printPayrollClaimStubs($funding_id)
+    {
+        $funding = \App\Models\Funding::findOrFail($funding_id);
+        $beneficiaries = SeniorCitizenFunding::with('seniorCitizen.barangay', 'seniorCitizen.gender')
+            ->where('funding_id', $funding_id)
+            ->whereHas('seniorCitizen')
+            ->get();
+
+        return view('pages.print-payroll-stubs', compact('funding', 'beneficiaries'));
+    }
+
+    /**
      * Display the payroll claim stub for a specific beneficiary.
      * This format combines the front of the ID with a larger QR code
      * for verification purposes.
