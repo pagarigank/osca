@@ -34,22 +34,18 @@
             margin-bottom: 10mm;
         }
 
-        /* Each stub on its own page */
         @media print {
             body {
                 background: none;
                 padding: 0;
                 margin: 0;
             }
-            
             .screen-label {
                 display: none;
             }
-            
             .stub-wrapper {
                 page-break-before: always;
             }
-            
             .stub-wrapper:first-child {
                 page-break-before: avoid;
             }

@@ -212,7 +212,15 @@
         }
 
         .name-block {
+            display: flex;
+            align-items: center;
+            gap: 1mm;
             margin-bottom: 1mm;
+        }
+        .name-labels {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
         }
         .name-field {
             margin-bottom: 1mm;
@@ -235,6 +243,36 @@
         }
         .name-field-value.small {
             font-size: 7pt;
+        }
+
+        /* QR Code container - proportional to name block height */
+        .qr-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .qr-box {
+            width: 10mm;
+            height: 10mm;
+            border: 0.3mm solid var(--border);
+            background: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.3mm;
+        }
+        .qr-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .qr-label {
+            font-size: 3pt;
+            color: var(--gray);
+            text-align: center;
+            margin-top: 0.3mm;
+            line-height: 1.1;
         }
 
         .details-row {
@@ -283,31 +321,6 @@
         .payroll-amount {
             color: #16a34a;
             font-weight: 700;
-        }
-
-        /* QR Code on front, below signature */
-        .qr-front-box {
-            width: 14mm;
-            height: 14mm;
-            border: 0.4mm solid var(--border);
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5mm;
-            margin-top: 1mm;
-            flex-shrink: 0;
-        }
-        .qr-front-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .qr-label {
-            font-size: 3.5pt;
-            color: var(--gray);
-            text-align: center;
-            margin-top: 0.5mm;
         }
 
         @page {
@@ -364,7 +377,7 @@
         <div class="watermark-logo" style="background-image: url('{{ asset('images/mabalacat_seal.png') }}');"></div>
 
         <div class="content-layer">
-
+            
             {{-- Header --}}
             <div class="header">
                 <img src="{{ asset('images/mabalacat_seal.png') }}" class="header-logo" alt="Mabalacat City Seal">
@@ -378,7 +391,7 @@
             {{-- Body --}}
             <div class="body">
 
-                {{-- LEFT COLUMN: Photo + Signature + QR --}}
+                {{-- LEFT COLUMN: Photo + Signature --}}
                 <div class="left">
                     <div class="photo-box">
                         @if($beneficiary->seniorCitizen->id_picture)
@@ -395,19 +408,9 @@
                         </div>
                         <div class="sig-label">Signature</div>
                     </div>
-
-                    {{-- QR Code on front of ID --}}
-                    @php
-                        $qrToken = $beneficiary->seniorCitizen->qr_token;
-                        $qrContent = 'OSCA Payroll Claim|ID:' . ($beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number) . '|Token:' . $qrToken;
-                    @endphp
-                    <div class="qr-front-box">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode($qrContent) }}" alt="QR Code">
-                    </div>
-                    <div class="qr-label">Verify Online</div>
                 </div>
 
-                {{-- RIGHT COLUMN: Details --}}
+                {{-- RIGHT COLUMN: Details with QR beside name --}}
                 <div class="right">
 
                     {{-- ID Number --}}
@@ -415,19 +418,33 @@
                         <span class="id-number-badge">{{ $beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number }}</span>
                     </div>
 
-                    {{-- Name Block --}}
+                    {{-- Name Block with QR --}}
                     <div class="name-block">
-                        <div class="name-field">
-                            <span class="name-field-label">Last Name</span>
-                            <span class="name-field-value">{{ strtoupper($beneficiary->seniorCitizen->last_name) }}@if($beneficiary->seniorCitizen->suffix) {{ strtoupper($beneficiary->seniorCitizen->suffix) }}@endif</span>
+                        <div class="name-labels">
+                            <div class="name-field">
+                                <span class="name-field-label">Last Name</span>
+                                <span class="name-field-value">{{ strtoupper($beneficiary->seniorCitizen->last_name) }}@if($beneficiary->seniorCitizen->suffix) {{ strtoupper($beneficiary->seniorCitizen->suffix) }}@endif</span>
+                            </div>
+                            <div class="name-field">
+                                <span class="name-field-label">First Name</span>
+                                <span class="name-field-value">{{ strtoupper($beneficiary->seniorCitizen->first_name) }}</span>
+                            </div>
+                            <div class="name-field">
+                                <span class="name-field-label">Middle Name</span>
+                                <span class="name-field-value small">{{ $beneficiary->seniorCitizen->middle_name ? strtoupper($beneficiary->seniorCitizen->middle_name) : '—' }}</span>
+                            </div>
                         </div>
-                        <div class="name-field">
-                            <span class="name-field-label">First Name</span>
-                            <span class="name-field-value">{{ strtoupper($beneficiary->seniorCitizen->first_name) }}</span>
-                        </div>
-                        <div class="name-field">
-                            <span class="name-field-label">Middle Name</span>
-                            <span class="name-field-value small">{{ $beneficiary->seniorCitizen->middle_name ? strtoupper($beneficiary->seniorCitizen->middle_name) : '—' }}</span>
+
+                        {{-- QR Code beside First Name --}}
+                        @php
+                            $qrToken = $beneficiary->seniorCitizen->qr_token;
+                            $qrContent = 'OSCA Payroll Claim|ID:' . ($beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number) . '|Token:' . $qrToken;
+                        @endphp
+                        <div class="qr-container">
+                            <div class="qr-box">
+                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ urlencode($qrContent) }}" alt="QR Code">
+                            </div>
+                            <div class="qr-label">Verify</div>
                         </div>
                     </div>
 
