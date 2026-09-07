@@ -121,14 +121,13 @@
         /* Print stub header - location info */
         .print-header {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1mm 2mm;
-            border-bottom: 0.5mm solid var(--border);
-            font-size: 5.5pt;
-            color: var(--black);
             flex-wrap: wrap;
-            gap: 1mm;
+            justify-content: center;
+            align-items: center;
+            padding: 0.8mm 2mm;
+            font-size: 5pt;
+            color: var(--black);
+            gap: 3mm 1mm;
         }
         .print-header .header-item {
             white-space: nowrap;
@@ -139,7 +138,7 @@
             text-transform: uppercase;
             color: var(--gray);
             display: block;
-            font-size: 4.5pt;
+            font-size: 4pt;
         }
         .print-header .header-value {
             color: var(--black);
@@ -362,8 +361,8 @@
         /* Running line between stubs */
         .print-line {
             width: 80%;
-            border-top: 0.5mm dashed var(--gray);
-            margin: 2mm auto;
+            border-top: 1px dashed var(--gray);
+            margin: 5mm auto;
         }
 
         @page {
@@ -410,6 +409,10 @@
             {{-- Print Stub Header - Location Info --}}
             <div class="print-header">
                 <div class="header-item">
+                    <span class="header-label">City</span>
+                    <span class="header-value">MABALACAT</span>
+                </div>
+                <div class="header-item">
                     <span class="header-label">Run Date</span>
                     <span class="header-value">{{ now()->format('M d, Y') }}</span>
                 </div>
@@ -422,7 +425,7 @@
                     <span class="header-value">{{ $beneficiary->seniorCitizen->purok_name ?? 'N/A' }}</span>
                 </div>
                 <div class="header-item">
-                    <span class="header-label">Purok Leader</span>
+                    <span class="header-label">Leader</span>
                     <span class="header-value">{{ $beneficiary->seniorCitizen->purokLeader ? $beneficiary->seniorCitizen->purokLeader->last_name . ', ' . $beneficiary->seniorCitizen->purokLeader->first_name : 'N/A' }}</span>
                 </div>
             </div>
@@ -447,9 +450,21 @@
                         </div>
                         <div class="sig-label">Signature</div>
                     </div>
+
+                    {{-- QR Code --}}
+                    @php
+                        $qrToken = $beneficiary->seniorCitizen->qr_token;
+                        $qrContent = 'OSCA Payroll Claim|ID:' . ($beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number) . '|Token:' . $qrToken;
+                    @endphp
+                    <div class="qr-container">
+                        <div class="qr-box">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode($qrContent) }}" alt="QR Code">
+                        </div>
+                        <div class="qr-label">Verify</div>
+                    </div>
                 </div>
 
-                {{-- RIGHT COLUMN: Details with QR beside name --}}
+                {{-- RIGHT COLUMN: Details --}}
                 <div class="right">
 
                     {{-- ID Number --}}
@@ -457,7 +472,7 @@
                         <span class="id-number-badge">{{ $beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number }}</span>
                     </div>
 
-                    {{-- Name Block with QR --}}
+                    {{-- Name Block --}}
                     <div class="name-block">
                         <div class="name-labels">
                             <div class="name-field">
@@ -472,18 +487,6 @@
                                 <span class="name-field-label">Middle Name</span>
                                 <span class="name-field-value small">{{ $beneficiary->seniorCitizen->middle_name ? strtoupper($beneficiary->seniorCitizen->middle_name) : '—' }}</span>
                             </div>
-                        </div>
-
-                        {{-- QR Code beside First Name --}}
-                        @php
-                            $qrToken = $beneficiary->seniorCitizen->qr_token;
-                            $qrContent = 'OSCA Payroll Claim|ID:' . ($beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number) . '|Token:' . $qrToken;
-                        @endphp
-                        <div class="qr-container">
-                            <div class="qr-box">
-                                <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode($qrContent) }}" alt="QR Code">
-                            </div>
-                            <div class="qr-label">Verify</div>
                         </div>
                     </div>
 

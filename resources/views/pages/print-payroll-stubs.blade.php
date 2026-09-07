@@ -36,7 +36,7 @@
         .print-line {
             width: 80%;
             border-top: 1px dashed var(--gray);
-            margin: 8mm auto;
+            margin: 5mm auto;
         }
 
         @media print {
@@ -56,7 +56,7 @@
         }
     </style>
 </head>
-<body>
+<body onload="window.print()">
 
     <div class="screen-label">Payroll Claim Stubs - {{ $funding->provider }}</div>
     
