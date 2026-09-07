@@ -1,0 +1,1192 @@
+<div>
+    <x-slot:title>Personal Information | OSCA Panel</x-slot:title>
+
+    <style>
+        .sc-header {
+            background: #1a1a2e;
+            color: #fff;
+            text-align: center;
+            padding: 0.75rem 1rem;
+            border-radius: 0.5rem 0.5rem 0 0;
+        }
+
+        .sc-header h4 {
+            margin: 0;
+            font-size: 0.8rem;
+            font-weight: 400;
+        }
+
+        .sc-header h3 {
+            margin: 0.1rem 0;
+            font-size: 1rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+
+        .sc-tabs {
+            display: flex;
+            border-bottom: 2px solid #e5e7eb;
+            margin-bottom: 1.25rem;
+            gap: 0;
+        }
+
+        .sc-tab {
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            border-bottom: none;
+            border-radius: 0.4rem 0.4rem 0 0;
+            color: #6b7280;
+            background: #f9fafb;
+            transition: all 0.2s;
+        }
+
+        .sc-tab.active {
+            background: #fff;
+            color: var(--primary);
+            border-color: #e5e7eb;
+            border-bottom-color: #fff;
+            margin-bottom: -2px;
+        }
+
+        .sc-tab:hover:not(.active) {
+            background: #f3f4f6;
+            color: #374151;
+        }
+
+        .form-grid {
+            display: grid;
+            gap: 0.75rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+
+        .form-row .fg {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .form-row .fg-2 {
+            flex: 2;
+            min-width: 160px;
+        }
+
+        .form-row .fg-3 {
+            flex: 3;
+            min-width: 200px;
+        }
+
+        .form-row .fg-sm {
+            flex: 0 0 100px;
+        }
+
+        .form-row .fg-xs {
+            flex: 0 0 70px;
+        }
+
+        .fg label {
+            display: block;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 0.2rem;
+        }
+
+        .fg input,
+        .fg select,
+        .fg textarea {
+            width: 100%;
+            padding: 0.4rem 0.5rem;
+            font-size: 0.82rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.35rem;
+            background: #fff;
+            color: #111827;
+        }
+
+        .fg input:focus,
+        .fg select:focus,
+        .fg textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1);
+        }
+
+        .section-divider {
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #6366f1;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0.4rem 0;
+            border-bottom: 1px solid #e5e7eb;
+            margin: 0.5rem 0;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 0.75rem;
+            align-items: center;
+        }
+
+        .btn-placeholder {
+            padding: 0.35rem 0.9rem;
+            border: 1px solid #d1d5db;
+            border-radius: 0.35rem;
+            font-size: 0.8rem;
+            background: #f9fafb;
+            color: #6b7280;
+            cursor: not-allowed;
+        }
+
+        .audit-box {
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 0.5rem;
+            padding: 0.75rem 1rem;
+            font-size: 0.75rem;
+            color: #6b7280;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.25rem 1.5rem;
+        }
+
+        .placeholder-area {
+            border: 2px dashed #d1d5db;
+            border-radius: 0.5rem;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #9ca3af;
+            font-size: 0.85rem;
+            font-style: italic;
+        }
+
+        .child-row {
+            display: flex;
+            gap: 0.5rem;
+            align-items: flex-end;
+            margin-bottom: 0.5rem;
+        }
+
+        .child-row .fg {
+            flex: 1;
+        }
+    </style>
+
+    <div class="page-container">
+
+        <!-- List view -->
+        @if(!$isFormOpen)
+            <div style="padding: 1rem 0;">
+                <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                    <div style="display:flex; gap:0.5rem; align-items:center;">
+                        <input type="text" wire:model="search" wire:keydown.enter="executeSearch"
+                            placeholder="Search by name or ID..."
+                            style="padding:0.4rem 0.75rem; border:1px solid #d1d5db; border-radius:0.4rem; font-size:0.85rem; width:260px;">
+                        <span style="font-size:0.75rem; color:#6b7280; font-style:italic;">Type at least 3 characters and
+                            press Enter</span>
+                    </div>
+                    <button wire:click="openCreateForm" class="btn btn-primary">+ Add New Senior Citizen</button>
+                </div>
+                <div style="overflow-x:auto;">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>ID Number</th>
+                                <th>Full Name</th>
+                                <th>Gender</th>
+                                <th>Date of Birth</th>
+                                <th>Barangay</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @forelse($seniors as $sc)
+                                <tr class="table-row">
+                                    <td>{{ $sc->id_number }}</td>
+                                    <td>{{ $sc->last_name }}, {{ $sc->first_name }} {{ $sc->middle_name }} {{ $sc->suffix }}
+                                    </td>
+                                    <td>{{ $sc->gender->name ?? '-' }}</td>
+                                    <td>{{ $sc->date_of_birth ? $sc->date_of_birth->format('M d, Y') : '-' }}</td>
+                                    <td>{{ $sc->barangay->name ?? '-' }}</td>
+                                    <td><span
+                                            class="badge {{ $sc->status === 'ACTIVE' ? 'badge-active' : 'badge-inactive' }}">{{ $sc->status }}</span>
+                                    </td>
+                                    <td>
+                                        <button wire:click="openViewMode({{ $sc->id }})"
+                                            class="btn btn-sm btn-secondary" style="background:#f3f4f6; color:#374151; border-color:#d1d5db;">View</button>
+                                        <button wire:click="openEditForm({{ $sc->id }})"
+                                            class="btn btn-sm btn-info">Edit</button>
+                                        <button wire:click="deactivate({{ $sc->id }})" wire:confirm="Deactivate this record?"
+                                            class="btn btn-sm btn-danger">Deactivate</button>
+                                    </td>
+                                </tr>
+                            @empty
+                                <tr>
+                                    <td colspan="7" style="text-align:center;padding:2rem;color:#9ca3af;">No records found.
+                                        Click '+ Add New Senior Citizen' to begin.</td>
+                                </tr>
+                            @endforelse
+                        </tbody>
+                    </table>
+                    <div style="margin-top:1rem;">{{ $seniors->links() }}</div>
+                </div>
+            </div>
+        @endif
+
+        <!-- Form view -->
+        @if($isFormOpen)
+            <div style="padding: 0.75rem 0;">
+                    <!-- Toolbar (placeholder buttons) -->
+                    <div class="toolbar">
+                        <button class="btn btn-placeholder" style="flex:1;">Print Assessment Form</button>
+                        <button class="btn btn-placeholder" style="flex:1;">View Purchase Booklet</button>
+                        <button class="btn btn-placeholder" style="flex:1;">Purchase History</button>
+                        <div style="margin-left:auto; display:flex; gap:0.5rem;">
+                            <button wire:click="closeForm" class="btn btn-secondary">Cancel</button>
+                            @if(!$isViewMode)
+                                <button wire:click="save" class="btn btn-primary">Save Record</button>
+                            @endif
+                        </div>
+                    </div>
+
+                    <!-- Header -->
+                    <div class="sc-header">
+                        <h4>Senior Citizen Profile</h4>
+                        <h3>{{ strtoupper(trim($last_name . ', ' . $first_name . ' ' . $middle_name . ' ' . $suffix, ', ')) ?: 'NEW RECORD' }}
+                        </h3>
+                    </div>
+
+                    <!-- Tabs -->
+                    <div class="sc-tabs">
+                        <button wire:click="setTab('personal')"
+                            class="sc-tab {{ $activeTab === 'personal' ? 'active' : '' }}">Personal Information</button>
+                        <button wire:click="setTab('ncsc')"
+                            class="sc-tab {{ $activeTab === 'ncsc' ? 'active' : '' }}">NCSC Data</button>
+                        <button wire:click="setTab('cswdo')"
+                            class="sc-tab {{ $activeTab === 'cswdo' ? 'active' : '' }}">CSWDO Assessment</button>
+                        <button wire:click="setTab('funding')"
+                            class="sc-tab {{ $activeTab === 'funding' ? 'active' : '' }}">Funding & Pension</button>
+                        <button wire:click="setTab('children')"
+                            class="sc-tab {{ $activeTab === 'children' ? 'active' : '' }}">Living Children</button>
+                    </div>
+                <fieldset @if($isViewMode) disabled @endif style="border:none; padding:0; margin:0;">
+                <!-- ===================== PERSONAL INFORMATION TAB ===================== -->
+                @if($activeTab === 'personal')
+                    <div class="form-grid" x-data="{ imageModalOpen: false, currentImage: '' }">
+                    
+                        @if(!empty($pending_updates))
+                            <div style="background-color: #fffbeb; border-left: 4px solid #f59e0b; padding: 1rem; border-radius: 0.375rem; margin-bottom: 1rem; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                                <div style="display:flex; justify-content:space-between; align-items:flex-start;">
+                                    <div>
+                                        <h4 style="color: #b45309; margin-top:0; margin-bottom: 0.5rem; font-size: 0.95rem; font-weight:700;">⚠️ Pending Approval for Name / Birthday Changes</h4>
+                                        <div style="font-size: 0.85rem; color: #92400e; margin-bottom: 0.75rem;">
+                                            A user has edited the following fields. These changes will not reflect on the ID or main records until approved.
+                                        </div>
+                                        <ul style="margin:0; padding-left:1.5rem; font-size: 0.85rem; color: #92400e; margin-bottom: 1rem;">
+                                            @if(isset($pending_updates['first_name'])) <li><strong>First Name:</strong> {{ $pending_updates['first_name'] }}</li> @endif
+                                            @if(isset($pending_updates['last_name'])) <li><strong>Last Name:</strong> {{ $pending_updates['last_name'] }}</li> @endif
+                                            @if(isset($pending_updates['middle_name'])) <li><strong>Middle Name:</strong> {{ $pending_updates['middle_name'] }}</li> @endif
+                                            @if(isset($pending_updates['date_of_birth'])) <li><strong>Date of Birth:</strong> {{ $pending_updates['date_of_birth'] }}</li> @endif
+                                        </ul>
+                                    </div>
+                                    @if(auth()->check() && (auth()->user()->is_admin || auth()->user()->role === 'Admin'))
+                                        <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                                            <button type="button" wire:click="approvePendingUpdates" style="background:#f59e0b; color:#fff; border:none; padding:0.4rem 0.8rem; border-radius:0.25rem; font-weight:600; cursor:pointer;">✓ Approve</button>
+                                            <button type="button" wire:click="rejectPendingUpdates" style="background:#fee2e2; color:#dc2626; border:none; padding:0.4rem 0.8rem; border-radius:0.25rem; font-weight:600; cursor:pointer;">✕ Reject</button>
+                                        </div>
+                                    @else
+                                        <div style="background:#fef3c7; color:#92400e; padding:0.4rem 0.8rem; border-radius:0.25rem; font-size:0.8rem; font-weight:600;">Awaiting Supervisor Approval</div>
+                                    @endif
+                                </div>
+                            </div>
+                        @endif
+
+                        <div class="section-divider">Identification</div>
+                        <div class="form-row">
+                            <div class="fg fg-2">
+                                <label>
+                                    ID Number
+                                    @if(!$isEditMode)
+                                        <span style="font-weight:400; color:#9ca3af; font-style:italic; text-transform:none; letter-spacing:0;">(optional — auto-assigned as M-0001 if blank)</span>
+                                    @endif
+                                </label>
+                                @if($isEditMode)
+                                    {{-- Read-only on edit to prevent changing assigned IDs --}}
+                                    <input type="text" value="{{ $id_number }}" readonly
+                                        style="background:#f3f4f6; color:#6b7280; cursor:not-allowed; font-weight:700; letter-spacing:1px;">
+                                @else
+                                    <input type="text" wire:model="id_number"
+                                        placeholder="Leave blank to auto-assign (M-XXXX) or enter manually"
+                                        style="font-family: monospace;">
+                                @endif
+                            </div>
+                            <div class="fg fg-2"><label>NCSC RRN</label><input type="text" wire:model="ncsc_rrn"
+                                    placeholder="NCSC Reference No."></div>
+                            <div class="fg fg-2"><label>National ID No.</label><input type="text" wire:model="national_id_no"
+                                    placeholder="PhilSys ID"></div>
+                            <div class="fg"><label>New ID Number</label><input type="text" wire:model="new_id_number"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="fg"><label>Voter's ID No.</label><input type="text" wire:model="voter_id_no"></div>
+                            <div class="fg fg-sm"><label>Precinct No.</label><input type="text" wire:model="precinct_no"></div>
+                            <div class="fg fg-2"><label>Precinct Place</label><input type="text" wire:model="precinct_place">
+                            </div>
+                        </div>
+
+                        <div class="section-divider">Name</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>Last Name *</label><input type="text" wire:model="last_name"></div>
+                            <div class="fg fg-2"><label>First Name *</label><input type="text" wire:model="first_name"></div>
+                            <div class="fg fg-2"><label>Middle Name</label><input type="text" wire:model="middle_name"></div>
+                            <div class="fg fg-xs"><label>Suffix</label><input type="text" wire:model="suffix" placeholder="Jr.">
+                            </div>
+                        </div>
+
+                        <div class="section-divider">Personal Details</div>
+                        <div class="form-row">
+                            <div class="fg"><label>Date of Birth *</label><input type="date" wire:model="date_of_birth"></div>
+                            <div class="fg"><label>Country of Birth</label><input type="text" wire:model="country_of_birth">
+                            </div>
+                            <div class="fg"><label>Gender *</label>
+                                <select wire:model="gender_id">
+                                    <option value="">-- Select --</option>@foreach($genders as $g)<option value="{{ $g->id }}">
+                                    {{ $g->name }}</option>@endforeach
+                                </select>
+                            </div>
+                            <div class="fg"><label>Civil Status</label>
+                                <select wire:model="civil_status_id">
+                                    <option value="">-- Select --</option>@foreach($civilStatuses as $c)<option
+                                    value="{{ $c->id }}">{{ $c->name }}</option>@endforeach
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="fg"><label>Nationality</label>
+                                <select wire:model="nationality_id">
+                                    <option value="">-- Select --</option>@foreach($nationalities as $n)<option
+                                    value="{{ $n->id }}">{{ $n->name }}</option>@endforeach
+                                </select>
+                            </div>
+                            <div class="fg"><label>Citizenship</label><input type="text" wire:model="citizenship"
+                                    placeholder="e.g. Filipino"></div>
+                            <div class="fg fg-2"><label>Dual Citizen Document</label><input type="text"
+                                    wire:model="dual_citizen_document"></div>
+                            <div class="fg fg-sm"><label>Blood Type</label><input type="text" wire:model="blood_type"
+                                    placeholder="A+"></div>
+                            <div class="fg fg-2"><label>Affiliation</label><input type="text" wire:model="affiliation"></div>
+                        </div>
+
+                        <div class="section-divider">Contact Information</div>
+                        <div class="form-row">
+                            <div class="fg"><label>Mobile No.</label><input type="text" wire:model="mobile_no"
+                                    placeholder="0999-999-9999"></div>
+                            <div class="fg fg-2"><label>Email</label><input type="email" wire:model="email"></div>
+                            <div class="fg fg-2"><label>Messenger Account</label><input type="text"
+                                    wire:model="messenger_account" placeholder="Facebook/Messenger"></div>
+                        </div>
+
+                        <div class="section-divider">Address</div>
+                        <div class="form-row">
+                            <div class="fg fg-sm"><label>House No.</label><input type="text" wire:model="house_no"></div>
+                            <div class="fg fg-2"><label>Street</label><input type="text" wire:model="street"></div>
+                            <div class="fg"><label>Purok</label>
+                                <select wire:model="purok_id">
+                                    <option value="">-- Select Purok --</option>
+                                    @foreach($puroks as $p)
+                                        <option value="{{ $p->id }}">{{ $p->purok_code ? $p->purok_code.' - ' : '' }}{{ $p->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="fg fg-2"><label>Purok Name</label><input type="text" wire:model="purok_name" readonly placeholder="Auto-filled from selected Purok"></div>
+                            <div class="fg"><label>Purok Code</label><input type="text" wire:model="purok_code" readonly placeholder="Auto-filled from selected Purok"></div>
+                            <div class="fg fg-2"><label>Purok Description</label><input type="text" wire:model="purok_description" readonly placeholder="Auto-filled from selected Purok"></div>
+                        </div>
+                        <div class="form-row">
+                            <div class="fg"><label>Barangay</label>
+                                <select wire:model="barangay_id">
+                                    <option value="">-- Select --</option>@foreach($barangays as $b)<option
+                                    value="{{ $b->id }}">{{ $b->name }}</option>@endforeach
+                                </select>
+                            </div>
+                            <div class="fg fg-2"><label>City/Municipality</label>
+                                <select wire:model="city_municipality">
+                                    <option value="">-- Select City --</option>
+                                    @foreach($availableCities as $city)
+                                        <option value="{{ $city->name }}">{{ $city->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="fg fg-2"><label>Province</label>
+                                <select wire:model.live="province">
+                                    <option value="">-- Select Province --</option>
+                                    @foreach($provinces as $prov)
+                                        <option value="{{ $prov->name }}">{{ $prov->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                        </div>
+
+                        <div class="section-divider">Living Situation</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>Living Condition / Arrangement</label>
+                                <select wire:model="living_condition_id">
+                                    <option value="">-- Select --</option>@foreach($livingConditions as $lc)<option
+                                    value="{{ $lc->id }}">{{ $lc->name }}</option>@endforeach
+                                </select>
+                            </div>
+                            <div class="fg fg-2"><label>Place of Living</label>
+                                <select wire:model="place_of_living_id">
+                                    <option value="">-- Select --</option>@foreach($placesOfLiving as $pl)<option
+                                    value="{{ $pl->id }}">{{ $pl->name }}</option>@endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="section-divider">Emergency Contact</div>
+                        <div class="form-row">
+                            <div class="fg fg-3"><label>Emergency Contact Person</label><input type="text"
+                                    wire:model="emergency_contact"></div>
+                            <div class="fg"><label>Contact No.</label><input type="text" wire:model="emergency_contact_no"
+                                    placeholder="0999-999-9999"></div>
+                        </div>
+
+                        <div class="section-divider">Transfer to Other LGU</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>Transferred To (LGU)</label><input type="text"
+                                    wire:model="transferred_to_lgu"></div>
+                            <div class="fg fg-2"><label>First Name</label><input type="text"
+                                    wire:model="transferred_first_name"></div>
+                            <div class="fg fg-xs"><label>Suffix</label><input type="text" wire:model="transferred_suffix"></div>
+                            <div class="fg"><label>Relation</label><input type="text" wire:model="transferred_relation"></div>
+                        </div>
+
+                        <div class="section-divider">Record Status</div>
+                        <div class="form-row">
+                            <div class="fg"><label>Effective Date</label><input type="date" wire:model="effective_date"></div>
+                            <div class="fg"><label>Status</label>
+                                <select wire:model="status">
+                                    <option value="ACTIVE">ACTIVE</option>
+                                    <option value="INACTIVE">INACTIVE</option>
+                                </select>
+                            </div>
+                            <div class="fg fg-3"><label>If Inactive, Reason</label><input type="text"
+                                    wire:model="inactive_reason"></div>
+                        </div>
+
+                        <!-- QR / Signature / Photo Placeholders -->
+                        <div class="section-divider">Attachments & Media</div>
+                        <div class="form-row" style="gap:1rem;">
+                            @if($isEditMode && $qr_token)
+                                @php
+                                    $qrOptions = new \chillerlan\QRCode\QROptions([
+                                        'eccLevel' => \chillerlan\QRCode\Common\EccLevel::H,
+                                        'outputBase64' => true,
+                                        'addQuietzone' => true,
+                                        'quietzoneSize' => 4,
+                                    ]);
+                                    $qrBase64 = (new \chillerlan\QRCode\QRCode($qrOptions))->render(url('/verify/' . $qr_token));
+                                @endphp
+                                <div style="display:flex; flex-direction:column; align-items:center; gap:0.5rem; background:#fff; padding:0.5rem; border:1px solid #e5e7eb; border-radius:0.5rem;">
+                                    <img src="{{ $qrBase64 }}" alt="QR Code" style="width:120px; height:120px; object-fit:contain;">
+                                    <span style="font-size:0.7rem; color:#6b7280; font-weight:600;">Verification QR</span>
+                                    <a href="{{ route('verify', ['token' => $qr_token]) }}" target="_blank" style="font-size:0.7rem; color:var(--primary); text-decoration:underline;">Test Link</a>
+                                </div>
+                            @else
+                                <div class="placeholder-area"
+                                    style="width:100px;min-height:100px;flex-direction:column;gap:0.25rem;">
+                                    <span style="font-size:1.5rem;">📷</span><span style="font-size:0.7rem;">QR Code</span>
+                                </div>
+                            @endif
+                            <!-- Signature Upload -->
+                            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                                @if($signature_upload)
+                                    <img src="{{ $signature_upload->temporaryUrl() }}" style="width:120px; height:100px; object-fit:contain; border:1px solid #e5e7eb; border-radius:0.5rem; background:#fff; cursor:pointer;" @click="currentImage = '{{ $signature_upload->temporaryUrl() }}'; imageModalOpen = true;">
+                                @elseif($existing_signature)
+                                    <img src="{{ Storage::url($existing_signature) }}" style="width:120px; height:100px; object-fit:contain; border:1px solid #e5e7eb; border-radius:0.5rem; background:#fff; cursor:pointer;" @click="currentImage = '{{ Storage::url($existing_signature) }}'; imageModalOpen = true;">
+                                @else
+                                    <div class="placeholder-area" style="width:120px;min-height:100px;flex-direction:column;gap:0.25rem;">
+                                        <span style="font-size:1.5rem;">✍️</span><span style="font-size:0.7rem;">Signature</span>
+                                    </div>
+                                @endif
+                                <input type="file" wire:model="signature_upload" style="font-size:0.75rem; width:120px;" accept="image/*">
+                            </div>
+
+                            <!-- Thumbmark Upload -->
+                            <div style="display:flex; flex-direction:column; gap:0.5rem;">
+                                @if($thumbmark_upload)
+                                    <img src="{{ $thumbmark_upload->temporaryUrl() }}" style="width:100px; height:100px; object-fit:contain; border:1px solid #e5e7eb; border-radius:0.5rem; background:#fff; cursor:pointer;" @click="currentImage = '{{ $thumbmark_upload->temporaryUrl() }}'; imageModalOpen = true;">
+                                @elseif($existing_thumbmark)
+                                    <img src="{{ Storage::url($existing_thumbmark) }}" style="width:100px; height:100px; object-fit:contain; border:1px solid #e5e7eb; border-radius:0.5rem; background:#fff; cursor:pointer;" @click="currentImage = '{{ Storage::url($existing_thumbmark) }}'; imageModalOpen = true;">
+                                @else
+                                    <div class="placeholder-area" style="width:100px;min-height:100px;flex-direction:column;gap:0.25rem;">
+                                        <span style="font-size:1.5rem;">👆</span><span style="font-size:0.7rem;">Thumbmark</span>
+                                    </div>
+                                @endif
+                                <input type="file" wire:model="thumbmark_upload" style="font-size:0.75rem; width:100px;" accept="image/*">
+                            </div>
+                            <!-- ID Picture Upload & Webcam -->
+                            <div x-data="{
+                                    cameraOpen: false,
+                                    stream: null,
+                                    cameras: [],
+                                    selectedCamera: null,
+                                    initCameras() {
+                                        navigator.mediaDevices.enumerateDevices()
+                                            .then(devices => {
+                                                this.cameras = devices.filter(device => device.kind === 'videoinput');
+                                                if (this.cameras.length > 0 && !this.selectedCamera) {
+                                                    this.selectedCamera = this.cameras[0].deviceId;
+                                                }
+                                            });
+                                    },
+                                    startCamera() {
+                                        this.cameraOpen = true;
+                                        this.startStream();
+                                        // Delay enum slightly to ensure permissions are granted
+                                        setTimeout(() => this.initCameras(), 500); 
+                                    },
+                                    startStream() {
+                                        if (this.stream) {
+                                            this.stream.getTracks().forEach(track => track.stop());
+                                        }
+                                        let constraints = { video: true };
+                                        if (this.selectedCamera) {
+                                            constraints.video = { deviceId: { exact: this.selectedCamera } };
+                                        }
+                                        navigator.mediaDevices.getUserMedia(constraints)
+                                            .then(stream => {
+                                                this.stream = stream;
+                                                this.$refs.video.srcObject = stream;
+                                            })
+                                            .catch(err => {
+                                                alert('Camera access denied or unavailable.');
+                                                this.cameraOpen = false;
+                                            });
+                                    },
+                                    takePhoto() {
+                                        let canvas = document.createElement('canvas');
+                                        canvas.width = this.$refs.video.videoWidth;
+                                        canvas.height = this.$refs.video.videoHeight;
+                                        let ctx = canvas.getContext('2d');
+                                        ctx.drawImage(this.$refs.video, 0, 0, canvas.width, canvas.height);
+                                        let dataUrl = canvas.toDataURL('image/png');
+                                        $wire.set('webcam_image_base64', dataUrl);
+                                        this.stopCamera();
+                                    },
+                                    stopCamera() {
+                                        if (this.stream) {
+                                            this.stream.getTracks().forEach(track => {
+                                                track.stop();
+                                            });
+                                        }
+                                        if (this.$refs.video) {
+                                            this.$refs.video.srcObject = null;
+                                        }
+                                        this.stream = null;
+                                        this.cameraOpen = false;
+                                    }
+                                }"
+                                style="display:flex; flex-direction:column; gap:0.5rem; position:relative;">
+                                
+                                <template x-teleport="body">
+                                    <div x-show="cameraOpen" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.6); z-index:999999; display:flex; align-items:center; justify-content:center;">
+                                        <div style="background:#fff; padding:1.5rem; border-radius:0.75rem; box-shadow:0 10px 25px rgba(0,0,0,0.2); display:flex; flex-direction:column; align-items:center; max-width:90%; width:450px;">
+                                            <h3 style="margin-top:0; margin-bottom:1rem; font-size:1.1rem; font-weight:bold; color:#1f2937; text-align:center; width:100%; border-bottom:1px solid #e5e7eb; padding-bottom:0.5rem;">Take ID Picture</h3>
+                                            
+                                            <template x-if="cameras.length > 1">
+                                                <select x-model="selectedCamera" @change="startStream()" style="width:100%; margin-bottom:1rem; padding:0.5rem; border-radius:0.5rem; border:1px solid #d1d5db;">
+                                                    <template x-for="(cam, index) in cameras" :key="cam.deviceId">
+                                                        <option :value="cam.deviceId" x-text="cam.label || 'Camera ' + (index + 1)"></option>
+                                                    </template>
+                                                </select>
+                                            </template>
+
+                                            <video x-ref="video" autoplay style="width:100%; aspect-ratio:4/3; object-fit:cover; border:2px solid #e5e7eb; border-radius:0.5rem; margin-bottom:1.5rem; background:#000;"></video>
+                                            <div style="display:flex; gap:1rem; width:100%;">
+                                                <button type="button" @click="takePhoto()" class="btn btn-primary" style="flex:1; padding:0.75rem; font-size:1rem; justify-content:center;">📸 Capture</button>
+                                                <button type="button" @click="stopCamera()" class="btn btn-secondary" style="flex:1; padding:0.75rem; font-size:1rem; background:#6b7280; color:#fff; justify-content:center;">Cancel</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </template>
+
+                                @if($id_picture_upload)
+                                    <img src="{{ $id_picture_upload->temporaryUrl() }}" style="width:100px; height:100px; object-fit:cover; border:1px solid #e5e7eb; border-radius:0.5rem; background:#fff; cursor:pointer;" @click="currentImage = '{{ $id_picture_upload->temporaryUrl() }}'; imageModalOpen = true;">
+                                @elseif($webcam_image_base64)
+                                    <img src="{{ $webcam_image_base64 }}" style="width:100px; height:100px; object-fit:cover; border:1px solid #e5e7eb; border-radius:0.5rem; background:#fff; cursor:pointer;" @click="currentImage = '{{ $webcam_image_base64 }}'; imageModalOpen = true;">
+                                @elseif($existing_id_picture)
+                                    <img src="{{ Storage::url($existing_id_picture) }}" style="width:100px; height:100px; object-fit:cover; border:1px solid #e5e7eb; border-radius:0.5rem; background:#fff; cursor:pointer;" @click="currentImage = '{{ Storage::url($existing_id_picture) }}'; imageModalOpen = true;">
+                                @else
+                                    <div class="placeholder-area" style="width:100px;min-height:100px;flex-direction:column;gap:0.25rem;">
+                                        <span style="font-size:1.5rem;">🪪</span><span style="font-size:0.7rem;">ID Picture</span>
+                                    </div>
+                                @endif
+                                <input type="file" wire:model="id_picture_upload" style="font-size:0.75rem; width:100px;" accept="image/*">
+                                <button type="button" @click="startCamera()" style="font-size:0.75rem; padding:0.25rem; border:1px solid #ccc; border-radius:0.25rem; background:#f9fafb; cursor:pointer;">📸 Use Webcam</button>
+                            </div>
+                        </div>
+
+                        <!-- Supporting Documents -->
+                        <div class="section-divider">Supporting Documents</div>
+                        <div style="display:flex; flex-direction:column; gap:1rem;">
+                            
+                            <!-- Upload Input -->
+                            <div style="background:#f9fafb; padding:1rem; border:1px dashed #d1d5db; border-radius:0.5rem;">
+                                <label style="display:block; font-size:0.85rem; font-weight:600; margin-bottom:0.5rem; color:#4b5563;">Upload Attachments</label>
+                                <input type="file" wire:model="attachment_uploads" multiple style="font-size:0.8rem;" accept="image/*,application/pdf">
+                                @error('attachment_uploads.*') <span style="color:red; font-size:0.75rem; display:block; margin-top:0.25rem;">{{ $message }}</span> @enderror
+                            </div>
+
+                            <!-- Thumbnail Grid -->
+                            @if(count($existing_attachments) > 0 || $attachment_uploads)
+                                <div style="display:flex; flex-wrap:wrap; gap:1rem;">
+                                    @foreach($existing_attachments as $attachment)
+                                        @php
+                                            $ext = strtolower(pathinfo($attachment['file_path'], PATHINFO_EXTENSION));
+                                            $isPdf = $ext === 'pdf';
+                                            $fileUrl = Storage::url($attachment['file_path']);
+                                        @endphp
+                                        <div style="position:relative; width:100px; height:100px; border:1px solid #e5e7eb; border-radius:0.5rem; overflow:hidden; background:#fff; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
+                                            @if($isPdf)
+                                                <a href="{{ $fileUrl }}" target="_blank" style="display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; height:100%; text-decoration:none; background:#f3f4f6; color:#4b5563;">
+                                                    <span style="font-size:2rem; margin-bottom:0.25rem;">📄</span>
+                                                    <span style="font-size:0.65rem; text-align:center; padding:0 0.25rem; word-break:break-all;">{{ Str::limit($attachment['file_name'], 10) }}</span>
+                                                </a>
+                                            @else
+                                                <img src="{{ $fileUrl }}" alt="Attachment" style="width:100%; height:100%; object-fit:cover; cursor:pointer;" @click="currentImage = '{{ $fileUrl }}'; imageModalOpen = true;">
+                                            @endif
+                                            
+                                            @if(!$isViewMode)
+                                                <button type="button" wire:click="deleteAttachment({{ $attachment['id'] }})" style="position:absolute; top:0.2rem; right:0.2rem; background:rgba(220,38,38,0.9); color:#fff; border:none; border-radius:50%; width:1.5rem; height:1.5rem; font-size:0.7rem; cursor:pointer; display:flex; align-items:center; justify-content:center;" title="Delete">✕</button>
+                                            @endif
+                                        </div>
+                                    @endforeach
+                                    
+                                    @if($attachment_uploads)
+                                        @foreach($attachment_uploads as $upload)
+                                            <div style="position:relative; width:100px; height:100px; border:1px dashed #3b82f6; border-radius:0.5rem; overflow:hidden; background:#eff6ff; display:flex; align-items:center; justify-content:center; opacity:0.7;">
+                                                <span style="font-size:0.7rem; color:#1d4ed8; text-align:center; padding:0.25rem;">Pending Save</span>
+                                            </div>
+                                        @endforeach
+                                    @endif
+                                </div>
+                            @endif
+
+                            <!-- Full Screen Modal -->
+                            <template x-teleport="body">
+                                <div x-show="imageModalOpen" style="position:fixed; top:0; left:0; width:100vw; height:100vh; background:rgba(0,0,0,0.85); z-index:9999999; display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.2s;" :style="imageModalOpen ? 'opacity:1;' : 'opacity:0;'" @click.self="imageModalOpen = false">
+                                    <button type="button" @click="imageModalOpen = false" style="position:absolute; top:1.5rem; right:1.5rem; background:rgba(255,255,255,0.2); color:#fff; border:none; border-radius:50%; width:3rem; height:3rem; font-size:1.5rem; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:background 0.2s;" onmouseover="this.style.background='rgba(255,255,255,0.4)'" onmouseout="this.style.background='rgba(255,255,255,0.2)'">✕</button>
+                                    <img :src="currentImage" style="max-width:90%; max-height:90vh; object-fit:contain; border-radius:0.5rem; box-shadow:0 25px 50px -12px rgba(0,0,0,0.5);">
+                                </div>
+                            </template>
+                        </div>
+
+                        <!-- Audit Info -->
+                        @if($isEditMode)
+                            <div class="section-divider">Audit Information</div>
+                            <div class="audit-box">
+                                <span>Date &amp; Time Record Created:
+                                    <strong>{{ optional(\App\Models\SeniorCitizen::find($seniorCitizenId))->created_at }}</strong></span>
+                                <span>Last Change Date &amp; Time:
+                                    <strong>{{ optional(\App\Models\SeniorCitizen::find($seniorCitizenId))->updated_at }}</strong></span>
+                                <span>Created By:
+                                    <strong>{{ optional(\App\Models\User::find(optional(\App\Models\SeniorCitizen::find($seniorCitizenId))->created_by))->name }}</strong></span>
+                                <span>Last Change By:
+                                    <strong>{{ optional(\App\Models\User::find(optional(\App\Models\SeniorCitizen::find($seniorCitizenId))->updated_by))->name }}</strong></span>
+                            </div>
+                        @endif
+
+                        @error('id_number') <div style="color:red;font-size:0.82rem;">{{ $message }}</div> @enderror
+                        @error('last_name') <div style="color:red;font-size:0.82rem;">{{ $message }}</div> @enderror
+                        @error('first_name') <div style="color:red;font-size:0.82rem;">{{ $message }}</div> @enderror
+                        @error('date_of_birth') <div style="color:red;font-size:0.82rem;">{{ $message }}</div> @enderror
+                        @error('gender_id') <div style="color:red;font-size:0.82rem;">{{ $message }}</div> @enderror
+                    </div>
+                @endif
+
+                <!-- ===================== NCSC TAB ===================== -->
+                @if($activeTab === 'ncsc')
+                    <div class="form-grid">
+                        <div class="section-divider">NCSC — National Commission of Senior Citizens</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>NCSC RRN</label><input type="text" wire:model="ncsc_rrn"
+                                    placeholder="NCSC Reference Registration Number"></div>
+                            <div class="fg"><label>Validation Date</label><input type="date" wire:model="ncsc_validation_date">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>SC Category</label>
+                                <select wire:model="sc_category">
+                                    <option value="">-- Select Category --</option>
+                                    <option>Centenarian</option>
+                                    <option>PWD Senior</option>
+                                    <option>Solo Parent Senior</option>
+                                    <option>Indigent Senior</option>
+                                    <option>Regular Senior</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="fg" style="flex:1;"><label>NCSC Remarks</label><textarea wire:model="ncsc_remarks"
+                                    rows="2" style="width:100%;resize:vertical;"></textarea></div>
+                        </div>
+
+                        {{-- ADDRESS ABROAD --}}
+                        <div class="section-divider">Address Abroad</div>
+                        <div class="form-row">
+                            <div class="fg"><label>House No.</label><input type="text"
+                                    wire:model="ncsc_address_abroad_house_no"></div>
+                            <div class="fg fg-2"><label>Street Name</label><input type="text"
+                                    wire:model="ncsc_address_abroad_street"></div>
+                            <div class="fg"><label>County</label><input type="text" wire:model="ncsc_address_abroad_county">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="fg"><label>State</label><input type="text" wire:model="ncsc_address_abroad_state"></div>
+                            <div class="fg"><label>Country</label><input type="text" wire:model="ncsc_address_abroad_country">
+                            </div>
+                            <div class="fg"><label>Zip Code</label><input type="text" wire:model="ncsc_address_abroad_zip">
+                            </div>
+                        </div>
+
+                        {{-- DESIGNATED BENEFICIARY --}}
+                        <div class="section-divider">Designated Primary Beneficiary</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>Name (Last Name, First Name, Middle Name)</label><input type="text"
+                                    wire:model="ncsc_primary_beneficiary_name"></div>
+                            <div class="fg fg-1"><label>Relationship</label><input type="text"
+                                    wire:model="ncsc_primary_beneficiary_rel"></div>
+                        </div>
+
+                        <div class="section-divider">Designated Secondary Beneficiary</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>Name (Last Name, First Name, Middle Name)</label><input type="text"
+                                    wire:model="ncsc_secondary_beneficiary_name"></div>
+                            <div class="fg fg-1"><label>Relationship</label><input type="text"
+                                    wire:model="ncsc_secondary_beneficiary_rel"></div>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- ===================== CSWDO TAB ===================== -->
+                @if($activeTab === 'cswdo')
+                    <div class="form-grid">
+
+                        {{-- AUTHORIZED REPRESENTATIVES --}}
+                        <div class="section-divider">Authorized Representatives <span
+                                style="font-weight:400;color:#9ca3af;">(Max 3)</span></div>
+                        @foreach($authorizedReps as $i => $rep)
+                            <div class="child-row" style="flex-wrap:wrap;">
+                                <div class="fg"><label>Last Name</label><input type="text"
+                                        wire:model="authorizedReps.{{ $i }}.last_name"></div>
+                                <div class="fg fg-2"><label>First Name</label><input type="text"
+                                        wire:model="authorizedReps.{{ $i }}.first_name"></div>
+                                <div class="fg"><label>Middle Name</label><input type="text"
+                                        wire:model="authorizedReps.{{ $i }}.middle_name"></div>
+                                <div class="fg fg-xs"><label>Ext.</label><input type="text"
+                                        wire:model="authorizedReps.{{ $i }}.suffix" placeholder="Jr."></div>
+                                <div class="fg"><label>DOB</label><input type="date"
+                                        wire:model="authorizedReps.{{ $i }}.date_of_birth"></div>
+                                <div class="fg"><label>Status</label>
+                                    <select wire:model="authorizedReps.{{ $i }}.civil_status_id">
+                                        <option value="">-- Select --</option>@foreach($civilStatuses as $cs)<option
+                                        value="{{ $cs->id }}">{{ $cs->name }}</option>@endforeach
+                                    </select>
+                                </div>
+                                <div class="fg"><label>Phone</label><input type="text" wire:model="authorizedReps.{{ $i }}.phone"
+                                        placeholder="XXXX-XXXX-XXXX"></div>
+                                <div style="padding-bottom:0.25rem;">
+                                    <button wire:click="removeRepRow({{ $i }})" type="button"
+                                        style="background:#fee2e2;border:none;border-radius:0.35rem;color:#dc2626;padding:0.4rem 0.6rem;cursor:pointer;">✕</button>
+                                </div>
+                            </div>
+                        @endforeach
+                        @if(count($authorizedReps) < 3)
+                            <div><button wire:click="addRepRow" type="button" class="btn btn-secondary" style="font-size:0.82rem;">+
+                                    Add Representative</button></div>
+                        @endif
+
+                        {{-- CAREGIVER --}}
+                        <div class="section-divider">Caregiver</div>
+                        @foreach($caregivers as $i => $cg)
+                            <div class="child-row" style="flex-wrap:wrap;">
+                                <div class="fg"><label>Last Name</label><input type="text"
+                                        wire:model="caregivers.{{ $i }}.last_name"></div>
+                                <div class="fg fg-2"><label>First Name</label><input type="text"
+                                        wire:model="caregivers.{{ $i }}.first_name"></div>
+                                <div class="fg"><label>Middle Name</label><input type="text"
+                                        wire:model="caregivers.{{ $i }}.middle_name"></div>
+                                <div class="fg fg-xs"><label>Ext.</label><input type="text" wire:model="caregivers.{{ $i }}.suffix">
+                                </div>
+                                <div class="fg"><label>Relationship</label><input type="text"
+                                        wire:model="caregivers.{{ $i }}.relationship"></div>
+                                <div class="fg"><label>Phone</label><input type="text" wire:model="caregivers.{{ $i }}.phone"
+                                        placeholder="XXXX-XXXX-XXXX"></div>
+                                <div style="padding-bottom:0.25rem;">
+                                    <button wire:click="removeCaregiverRow({{ $i }})" type="button"
+                                        style="background:#fee2e2;border:none;border-radius:0.35rem;color:#dc2626;padding:0.4rem 0.6rem;cursor:pointer;">✕</button>
+                                </div>
+                            </div>
+                        @endforeach
+                        <div><button wire:click="addCaregiverRow" type="button" class="btn btn-secondary"
+                                style="font-size:0.82rem;">+ Add Caregiver</button></div>
+
+                        {{-- HEALTH CONDITION --}}
+                        <div class="section-divider">Health Condition</div>
+                        <div class="form-row" style="align-items:center;">
+                            <div class="fg fg-sm"><label>Ambulatory</label>
+                                <select wire:model="ambulatory">
+                                    <option value="">-- Select --</option>
+                                    <option value="1">Yes</option>
+                                    <option value="0">No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div style="font-size:0.75rem;color:#6b7280;margin-bottom:0.25rem;">Pre-existing Conditions (Max 5) —
+                            from ICD10-CM Diagnosis File</div>
+                        @foreach($preConditions as $i => $pc)
+                            <div class="child-row">
+                                <div class="fg fg-3"><select wire:model="preConditions.{{ $i }}.diagnosis_id">
+                                        <option value="">-- Select Diagnosis --</option>@foreach($diagnoses as $d)<option
+                                        value="{{ $d->id }}">{{ $d->generic_name }}</option>@endforeach
+                                    </select></div>
+                                <div><button wire:click="removePreCondRow({{ $i }})" type="button"
+                                        style="background:#fee2e2;border:none;border-radius:0.35rem;color:#dc2626;padding:0.35rem 0.6rem;cursor:pointer;">✕</button>
+                                </div>
+                            </div>
+                        @endforeach
+                        @if(count($preConditions) < 5)
+                            <div><button wire:click="addPreCondRow" type="button" class="btn btn-secondary"
+                                    style="font-size:0.82rem;">+ Add Pre-existing Condition</button></div>
+                        @endif
+
+                        <div style="font-size:0.75rem;color:#6b7280;margin-bottom:0.25rem;">Disability Diagnoses (Max 5) — from
+                            ICD10-CM Diagnosis File</div>
+                        @foreach($disabilityDiags as $i => $dd)
+                            <div class="child-row">
+                                <div class="fg fg-3"><select wire:model="disabilityDiags.{{ $i }}.diagnosis_id">
+                                        <option value="">-- Select Diagnosis --</option>@foreach($diagnoses as $d)<option
+                                        value="{{ $d->id }}">{{ $d->generic_name }}</option>@endforeach
+                                    </select></div>
+                                <div><button wire:click="removeDisabilityRow({{ $i }})" type="button"
+                                        style="background:#fee2e2;border:none;border-radius:0.35rem;color:#dc2626;padding:0.35rem 0.6rem;cursor:pointer;">✕</button>
+                                </div>
+                            </div>
+                        @endforeach
+                        @if(count($disabilityDiags) < 5)
+                            <div><button wire:click="addDisabilityRow" type="button" class="btn btn-secondary"
+                                    style="font-size:0.82rem;">+ Add Disability Diagnosis</button></div>
+                        @endif
+
+                        <div style="font-size:0.75rem;color:#6b7280;margin-bottom:0.25rem;">Frailty (Max 3)</div>
+                        @foreach($frailtyRows as $i => $fr)
+                            <div class="child-row">
+                                <div class="fg fg-3"><select wire:model="frailtyRows.{{ $i }}.frailty_id">
+                                        <option value="">-- Select Frailty --</option>@foreach($frailties as $f)<option
+                                        value="{{ $f->id }}">{{ $f->name }}</option>@endforeach
+                                    </select></div>
+                                <div><button wire:click="removeFrailtyRow({{ $i }})" type="button"
+                                        style="background:#fee2e2;border:none;border-radius:0.35rem;color:#dc2626;padding:0.35rem 0.6rem;cursor:pointer;">✕</button>
+                                </div>
+                            </div>
+                        @endforeach
+                        @if(count($frailtyRows) < 3)
+                            <div><button wire:click="addFrailtyRow" type="button" class="btn btn-secondary"
+                                    style="font-size:0.82rem;">+ Add Frailty</button></div>
+                        @endif
+
+                        {{-- ECONOMIC STATUS --}}
+                        <div class="section-divider">Economic Status</div>
+                        <div style="font-size:0.75rem;color:#6b7280;margin-bottom:0.25rem;">Pension Source (Max 2)</div>
+                        @foreach($pensionRows as $i => $pr)
+                            <div class="child-row">
+                                <div class="fg fg-3"><select wire:model="pensionRows.{{ $i }}.pension_source_id">
+                                        <option value="">-- Select Pension Source --</option>@foreach($pensionSources as $ps)<option
+                                        value="{{ $ps->id }}">{{ $ps->name }}</option>@endforeach
+                                    </select></div>
+                                <div class="fg fg-sm"><label>Amount (₱)</label><input type="number"
+                                        wire:model="pensionRows.{{ $i }}.amount" step="0.01" placeholder="0.00"></div>
+                                <div style="padding-top:1rem;"><button wire:click="removePensionRow({{ $i }})" type="button"
+                                        style="background:#fee2e2;border:none;border-radius:0.35rem;color:#dc2626;padding:0.35rem 0.6rem;cursor:pointer;">✕</button>
+                                </div>
+                            </div>
+                        @endforeach
+                        @if(count($pensionRows) < 2)
+                            <div><button wire:click="addPensionRow" type="button" class="btn btn-secondary"
+                                    style="font-size:0.82rem;">+ Add Pension</button></div>
+                        @endif
+
+                        <div style="font-size:0.75rem;color:#6b7280;margin-bottom:0.25rem;">Regular Income (Max 2)</div>
+                        @foreach($regularIncomeRows as $i => $ri)
+                            <div class="child-row">
+                                <div class="fg fg-3"><select wire:model="regularIncomeRows.{{ $i }}.regular_income_id">
+                                        <option value="">-- Select Regular Income --</option>@foreach($regularIncomes as $r)<option
+                                        value="{{ $r->id }}">{{ $r->name }}</option>@endforeach
+                                    </select></div>
+                                <div class="fg fg-sm"><label>Amount (₱)</label><input type="number"
+                                        wire:model="regularIncomeRows.{{ $i }}.amount" step="0.01" placeholder="0.00"></div>
+                                <div style="padding-top:1rem;"><button wire:click="removeRegIncomeRow({{ $i }})" type="button"
+                                        style="background:#fee2e2;border:none;border-radius:0.35rem;color:#dc2626;padding:0.35rem 0.6rem;cursor:pointer;">✕</button>
+                                </div>
+                            </div>
+                        @endforeach
+                        @if(count($regularIncomeRows) < 2)
+                            <div><button wire:click="addRegIncomeRow" type="button" class="btn btn-secondary"
+                                    style="font-size:0.82rem;">+ Add Regular Income</button></div>
+                        @endif
+
+                        <div style="font-size:0.75rem;color:#6b7280;margin-bottom:0.25rem;">Other Income (Max 2)</div>
+                        @foreach($otherIncomeRows as $i => $oi)
+                            <div class="child-row">
+                                <div class="fg fg-3"><select wire:model="otherIncomeRows.{{ $i }}.other_income_id">
+                                        <option value="">-- Select Other Income --</option>@foreach($otherIncomes as $o)<option
+                                        value="{{ $o->id }}">{{ $o->name }}</option>@endforeach
+                                    </select></div>
+                                <div class="fg fg-sm"><label>Amount (₱)</label><input type="number"
+                                        wire:model="otherIncomeRows.{{ $i }}.amount" step="0.01" placeholder="0.00"></div>
+                                <div style="padding-top:1rem;"><button wire:click="removeOtherIncRow({{ $i }})" type="button"
+                                        style="background:#fee2e2;border:none;border-radius:0.35rem;color:#dc2626;padding:0.35rem 0.6rem;cursor:pointer;">✕</button>
+                                </div>
+                            </div>
+                        @endforeach
+                        @if(count($otherIncomeRows) < 2)
+                            <div><button wire:click="addOtherIncRow" type="button" class="btn btn-secondary"
+                                    style="font-size:0.82rem;">+ Add Other Income</button></div>
+                        @endif
+
+                        {{-- LIVING CONDITION --}}
+                        <div class="section-divider">Living Condition</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>Place of Living</label>
+                                <select wire:model="dswd_place_of_living_id">
+                                    <option value="">-- Select --</option>@foreach($placesOfLiving as $pl)<option
+                                    value="{{ $pl->id }}">{{ $pl->name }}</option>@endforeach
+                                </select>
+                            </div>
+                            <div class="fg fg-2"><label>Living Condition / Arrangement</label>
+                                <select wire:model="dswd_living_condition_id">
+                                    <option value="">-- Select --</option>@foreach($livingConditions as $lc)<option
+                                    value="{{ $lc->id }}">{{ $lc->name }}</option>@endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- FACTOR CONSIDERATION SCORING --}}
+                        <div class="section-divider">Factor Consideration Scoring</div>
+                        <div style="background:#fff;border:1px solid #e2e8f0;border-radius:0.5rem;overflow:hidden;">
+                            <table style="width:100%;border-collapse:collapse;font-size:0.82rem;text-align:left;">
+                                <thead style="background:#f8fafc;border-bottom:1px solid #e2e8f0;">
+                                    <tr>
+                                        <th style="padding:0.75rem;font-weight:600;color:#475569;">Factor of Consideration</th>
+                                        <th style="padding:0.75rem;font-weight:600;color:#475569;">Particular (Details)</th>
+                                        <th
+                                            style="padding:0.75rem;font-weight:600;color:#475569;text-align:center;width:120px;">
+                                            Guide Points</th>
+                                        <th style="padding:0.75rem;font-weight:600;color:#475569;text-align:center;width:80px;">
+                                            Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach($selectedScorings as $i => $row)
+                                        <tr style="border-bottom:1px solid #f1f5f9;transition:background 0.2s;"
+                                            onmouseover="this.style.background='#f8fafc'"
+                                            onmouseout="this.style.background='transparent'">
+                                            <td style="padding:0.75rem;">
+                                                <select wire:model.live="selectedScorings.{{ $i }}.factor_consideration_id"
+                                                    style="width:100%;padding:0.4rem;border:1px solid #d1d5db;border-radius:0.35rem;outline:none;">
+                                                    <option value="">-- Select Factor --</option>
+                                                    @foreach($factorConsiderations as $fc)
+                                                        <option value="{{ $fc->id }}">{{ $fc->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            <td style="padding:0.75rem;">
+                                                <select wire:model.live="selectedScorings.{{ $i }}.consideration_scoring_detail_id"
+                                                    style="width:100%;padding:0.4rem;border:1px solid #d1d5db;border-radius:0.35rem;outline:none;">
+                                                    <option value="">-- Select Criteria --</option>
+                                                    @php
+                                                        $selectedFc = $factorConsiderations->firstWhere('id', $row['factor_consideration_id']);
+                                                        $details = $selectedFc ? $selectedFc->scoringDetails : [];
+                                                    @endphp
+                                                    @foreach($details as $detail)
+                                                        <option value="{{ $detail->id }}">{{ $detail->particular }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </td>
+                                            <td style="padding:0.75rem;text-align:center;font-weight:600;color:#0ea5e9;">
+                                                {{ number_format((float) ($row['points'] ?? 0), 2) }}
+                                            </td>
+                                            <td style="padding:0.75rem;text-align:center;">
+                                                <button wire:click="removeScoringRow({{ $i }})" type="button"
+                                                    style="background:#fee2e2;border:none;border-radius:0.35rem;color:#dc2626;padding:0.35rem 0.6rem;cursor:pointer;transition:background 0.2s;"
+                                                    onmouseover="this.style.background='#fecaca'"
+                                                    onmouseout="this.style.background='#fee2e2'">✕</button>
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                                <tfoot style="background:#eff6ff;border-top:2px solid #bae6fd;">
+                                    <tr>
+                                        <td colspan="4" style="padding:0.5rem 0.75rem;">
+                                            <button wire:click="addScoringRow" type="button"
+                                                style="background:#e0f2fe;color:#0369a1;border:1px dashed #7dd3fc;border-radius:0.35rem;padding:0.4rem 0.75rem;font-size:0.8rem;font-weight:600;cursor:pointer;transition:background 0.2s;"
+                                                onmouseover="this.style.background='#bae6fd'"
+                                                onmouseout="this.style.background='#e0f2fe'">+ Add Consideration</button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td colspan="2"
+                                            style="padding:0.85rem;text-align:right;font-weight:700;color:#1e3a8a;font-size:0.9rem;">
+                                            Total Accumulated Points:</td>
+                                        <td
+                                            style="padding:0.85rem;text-align:center;font-weight:800;color:#1d4ed8;font-size:1.1rem;">
+                                            {{ number_format((float) $totalGuidePoints, 2) }}</td>
+                                        <td></td>
+                                    </tr>
+                                </tfoot>
+                            </table>
+                        </div>
+
+                        {{-- ASSESSMENT & RECOMMENDATION --}}
+                        <div class="section-divider">Assessment &amp; Recommendation</div>
+                        <div class="form-row">
+                            <div class="fg fg-3"><label>Assessment (Free Text)</label><textarea wire:model="dswd_assessment"
+                                    rows="3" style="width:100%;resize:vertical;"></textarea></div>
+                            <div class="fg"><label>Recommendation</label>
+                                <select wire:model="recommendation">
+                                    <option value="">-- Blank --</option>
+                                    <option value="Eligible">Eligible</option>
+                                    <option value="Not Eligible">Not Eligible</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        {{-- ENCODED / VALIDATED BY --}}
+                        <div class="section-divider">Encoded By / Validated By</div>
+                        <div class="audit-box">
+                            <span>Encoded By:
+                                <strong>{{ optional(\App\Models\User::find($encoded_by))->name ?? auth()->user()->name }}</strong></span>
+                            <span>Encoded At: <strong>{{ $encoded_at ?: '(will be set on save)' }}</strong></span>
+                            <span>Validated By:
+                                <strong>{{ optional(\App\Models\User::find($validated_by))->name ?? '—' }}</strong></span>
+                            <span>Validated At: <strong>{{ $validated_at ?: '—' }}</strong></span>
+                        </div>
+
+                    </div>
+                @endif
+
+                <!-- ===================== FUNDING TAB ===================== -->
+                @if($activeTab === 'funding')
+                    <div class="form-grid">
+                        <div class="section-divider">Pension</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>Pension Source</label>
+                                <select wire:model="pension_source_id">
+                                    <option value="">-- Select --</option>@foreach($pensionSources as $ps)<option
+                                    value="{{ $ps->id }}">{{ $ps->name }}</option>@endforeach
+                                </select>
+                            </div>
+                            <div class="fg"><label>Monthly Pension (₱)</label><input type="number" wire:model="monthly_pension"
+                                    step="0.01" placeholder="0.00"></div>
+                        </div>
+
+                        <div class="section-divider">Funding &amp; Payroll</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>Funding Source</label>
+                                <select wire:model="funding_id">
+                                    <option value="">-- Select --</option>@foreach($fundings as $f)<option value="{{ $f->id }}">
+                                    {{ $f->fund_source }}</option>@endforeach
+                                </select>
+                            </div>
+                            <div class="fg fg-2"><label>Payroll Provider</label>
+                                <select wire:model="payroll_provider_id">
+                                    <option value="">-- Select --</option>@foreach($payrollProviders as $pp)<option
+                                    value="{{ $pp->id }}">{{ $pp->name }}</option>@endforeach
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="section-divider">Regular Income</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>Regular Income Type</label><input type="text"
+                                    wire:model="regular_income_type" placeholder="e.g. Salary, Pension, Allowance"></div>
+                            <div class="fg"><label>Amount (₱)</label><input type="number" wire:model="regular_income_amount"
+                                    step="0.01" placeholder="0.00"></div>
+                        </div>
+
+                        <div class="section-divider">Other Income</div>
+                        <div class="form-row">
+                            <div class="fg fg-2"><label>Other Income Source</label>
+                                <select wire:model="other_income_id">
+                                    <option value="">-- Select --</option>@foreach($otherIncomes as $oi)<option
+                                    value="{{ $oi->id }}">{{ $oi->name }}</option>@endforeach
+                                </select>
+                            </div>
+                            <div class="fg"><label>Amount (₱)</label><input type="number" wire:model="other_income_amount"
+                                    step="0.01" placeholder="0.00"></div>
+                        </div>
+                    </div>
+                @endif
+
+                <!-- ===================== LIVING CHILDREN TAB ===================== -->
+                @if($activeTab === 'children')
+                    <div class="form-grid">
+                        <div class="section-divider">Living Children</div>
+                        <div style="font-size:0.8rem;color:#6b7280;margin-bottom:0.5rem;">List the senior citizen's living
+                            children below.</div>
+                        @foreach($livingChildren as $index => $child)
+                            <div class="child-row">
+                                <div class="fg"><label>Last Name</label><input type="text"
+                                        wire:model="livingChildren.{{ $index }}.last_name"></div>
+                                <div class="fg fg-2"><label>First Name</label><input type="text"
+                                        wire:model="livingChildren.{{ $index }}.first_name"></div>
+                                <div class="fg"><label>Mobile No.</label><input type="text"
+                                        wire:model="livingChildren.{{ $index }}.mobile_no" placeholder="0999-999-9999"></div>
+                                <div style="padding-bottom:0.25rem;">
+                                    <button wire:click="removeChildRow({{ $index }})" type="button"
+                                        style="background:#fee2e2;border:none;border-radius:0.35rem;color:#dc2626;padding:0.4rem 0.6rem;cursor:pointer;font-size:0.85rem;">✕</button>
+                                </div>
+                            </div>
+                        @endforeach
+                        <div>
+                            @if(!$isViewMode)
+                            <button wire:click="addChildRow" type="button" class="btn btn-secondary"
+                                style="font-size:0.82rem;">+ Add Child Row</button>
+                            @endif
+                        </div>
+                    </div>
+                @endif
+                </fieldset>
+
+                <!-- Bottom action bar -->
+                <div
+                    style="display:flex;justify-content:flex-end;gap:0.75rem;margin-top:1.5rem;padding-top:1rem;border-top:1px solid #e5e7eb;">
+                    @if($isEditMode)
+                        <button type="button" onclick="window.open('{{ route('print.id', ['id' => $seniorCitizenId]) }}', '_blank')" class="btn btn-secondary" style="margin-right:auto; border-color:var(--primary); color:var(--primary); padding:0.4rem 1rem; font-weight:600;">🖨️ Print ID</button>
+                    @endif
+                    
+                    @if($isViewMode)
+                        <button wire:click="closeForm" class="btn btn-secondary">Close</button>
+                    @else
+                        <button wire:click="closeForm" class="btn btn-secondary">Cancel</button>
+                        <button wire:click="save" class="btn btn-primary">Save Record</button>
+                    @endif
+                </div>
+            </div>
+        @endif
+    </div>
+</div>
