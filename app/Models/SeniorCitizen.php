@@ -39,6 +39,7 @@ class SeniorCitizen extends Model
     public function nationality() { return $this->belongsTo(\App\Models\Nationality::class, 'nationality_id'); }
     public function barangay() { return $this->belongsTo(\App\Models\Barangay::class, 'barangay_id'); }
     public function purok() { return $this->belongsTo(\App\Models\Purok::class, 'purok_id'); }
+    public function purokLeader() { return $this->belongsTo(\App\Models\PurokLeader::class, 'purok_leader_id'); }
     public function placeOfLiving() { return $this->belongsTo(\App\Models\PlaceOfLiving::class, 'place_of_living_id'); }
     public function livingChildren() { return $this->hasMany(\App\Models\SeniorCitizenLivingChild::class, 'senior_citizen_id'); }
     public function funding() { return $this->hasOne(\App\Models\SeniorCitizenFunding::class, 'senior_citizen_id'); }
