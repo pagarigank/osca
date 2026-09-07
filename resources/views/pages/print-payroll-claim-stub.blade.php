@@ -28,17 +28,15 @@
             print-color-adjust: exact;
         }
 
-        /* Screen preview wrapper */
         .preview-wrap {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 12mm;
+            gap: 4mm;
             padding: 10mm;
         }
 
-        /* CARD BASE */
-        .card {
+        .stub-page {
             width: var(--card-w);
             height: var(--card-h);
             background: #ffffff;
@@ -49,7 +47,6 @@
             flex-direction: column;
         }
 
-        /* WATERMARK */
         .watermark {
             position: absolute;
             inset: 0;
@@ -61,15 +58,14 @@
             overflow: hidden;
         }
         .watermark span {
-            font-size: 14pt;
+            font-size: 12pt;
             font-weight: 900;
             color: rgba(0,0,0,0.04);
             text-transform: uppercase;
-            letter-spacing: 4px;
+            letter-spacing: 3px;
             white-space: nowrap;
             transform: rotate(-30deg);
             line-height: 1;
-            font-family: 'Inter', sans-serif;
         }
         .watermark-logo {
             position: absolute;
@@ -80,13 +76,12 @@
             pointer-events: none;
             z-index: 0;
             overflow: hidden;
-            background-size: 38mm;
+            background-size: 32mm;
             background-position: center;
             background-repeat: no-repeat;
             opacity: 0.07;
         }
 
-        /* CONTENT LAYER */
         .content-layer {
             position: relative;
             z-index: 10;
@@ -95,8 +90,7 @@
             height: 100%;
         }
 
-        /* FRONT HEADER */
-        .front-header {
+        .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
@@ -131,23 +125,15 @@
             color: var(--black);
             line-height: 1.4;
         }
-        .header-text .office-name {
-            font-size: 5.5pt;
-            letter-spacing: 0.5px;
-            color: var(--black);
-            line-height: 1.3;
-        }
 
-        /* FRONT BODY */
-        .front-body {
+        .body {
             display: flex;
             flex: 1;
             padding: 1.5mm 2mm 1.5mm 2mm;
             gap: 2mm;
         }
 
-        /* LEFT COLUMN: Photo + Signature */
-        .front-left {
+        .left {
             width: 21mm;
             display: flex;
             flex-direction: column;
@@ -205,8 +191,7 @@
             letter-spacing: 0.5px;
         }
 
-        /* RIGHT COLUMN: ID Info */
-        .front-right {
+        .right {
             flex: 1;
             display: flex;
             flex-direction: column;
@@ -279,9 +264,8 @@
             color: var(--black);
         }
 
-        /* PAYROLL INFO SECTION */
         .payroll-section {
-            margin-top: 1mm;
+            margin-top: auto;
             padding-top: 1mm;
             border-top: 0.3mm solid #aaa;
         }
@@ -295,27 +279,26 @@
             font-size: 7pt;
             font-weight: 600;
             color: var(--black);
-            line-height: 1.2;
         }
         .payroll-amount {
             color: #16a34a;
             font-weight: 700;
         }
 
-        /* BACK LEFT: QR Code Box - larger size for scanning */
-        .qr-box {
-            width: 16mm;
-            height: 16mm;
+        /* QR Code on front, below signature */
+        .qr-front-box {
+            width: 14mm;
+            height: 14mm;
             border: 0.4mm solid var(--border);
             background: #ffffff;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 0.5mm;
+            margin-top: 1mm;
             flex-shrink: 0;
-            margin-top: 2mm;
         }
-        .qr-box img {
+        .qr-front-box img {
             width: 100%;
             height: 100%;
             object-fit: contain;
@@ -325,10 +308,8 @@
             color: var(--gray);
             text-align: center;
             margin-top: 0.5mm;
-            line-height: 1.3;
         }
 
-        /* Print Rules */
         @page {
             size: 86mm 54mm;
             margin: 0;
@@ -349,21 +330,17 @@
                 margin: 0;
                 width: 86mm;
             }
-            .preview-wrap > div {
+            .preview-wrap > .stub-page {
                 page-break-inside: avoid;
-                break-inside: avoid;
             }
-            .card {
+            .stub-page {
                 box-shadow: none;
-                page-break-inside: avoid;
-                break-inside: avoid;
             }
             .screen-label {
                 display: none !important;
             }
         }
 
-        /* Screen label */
         .screen-label {
             font-family: 'Inter', sans-serif;
             font-size: 9pt;
@@ -380,147 +357,131 @@
 <body onload="window.print()">
 
 <div class="preview-wrap">
-    {{-- FRONT OF PAYROLL CLAIM STUB --}}
-    <div>
-        <div class="screen-label">Payroll Claim Stub</div>
-        <div class="card card-front">
+    <div class="screen-label">Payroll Claim Stub</div>
+    <div class="stub-page">
 
-            {{-- Mabalacat City Seal Watermark --}}
-            <div class="watermark-logo" style="background-image: url('{{ asset('images/mabalacat_seal.png') }}');"></div>
+        {{-- Mabalacat City Seal Watermark --}}
+        <div class="watermark-logo" style="background-image: url('{{ asset('images/mabalacat_seal.png') }}');"></div>
 
-            <div class="content-layer">
+        <div class="content-layer">
 
-                {{-- Header --}}
-                <div class="front-header">
-                    {{-- Mabalacat City Seal --}}
-                    <img src="{{ asset('images/mabalacat_seal.png') }}"
-                         class="header-logo" alt="Mabalacat City Seal">
-
-                    {{-- Center: Office Text --}}
-                    <div class="header-text">
-                        <div class="republic">OFFICE OF THE SENIOR CITIZENS AFFAIRS</div>
-                        <div class="city-name">MABALACAT CITY</div>
-                    </div>
-
-                    {{-- Right: OSCA Logo --}}
-                    <img src="{{ asset('images/osca_logo.png') }}"
-                         class="header-logo" alt="OSCA Logo">
+            {{-- Header --}}
+            <div class="header">
+                <img src="{{ asset('images/mabalacat_seal.png') }}" class="header-logo" alt="Mabalacat City Seal">
+                <div class="header-text">
+                    <div class="republic">OFFICE OF THE SENIOR CITIZENS AFFAIRS</div>
+                    <div class="city-name">MABALACAT CITY</div>
                 </div>
+                <img src="{{ asset('images/osca_logo.png') }}" class="header-logo" alt="OSCA Logo">
+            </div>
 
-                {{-- Body --}}
-                <div class="front-body">
+            {{-- Body --}}
+            <div class="body">
 
-                    {{-- LEFT COLUMN: Photo + Signature --}}
-                    <div class="front-left">
-                        <div class="photo-box">
-                            @if($beneficiary->seniorCitizen->id_picture)
-                                <img src="{{ Storage::url($beneficiary->seniorCitizen->id_picture) }}" alt="Photo">
-                            @else
-                                <div class="photo-placeholder">Photo<br>Here</div>
+                {{-- LEFT COLUMN: Photo + Signature + QR --}}
+                <div class="left">
+                    <div class="photo-box">
+                        @if($beneficiary->seniorCitizen->id_picture)
+                            <img src="{{ Storage::url($beneficiary->seniorCitizen->id_picture) }}" alt="Photo">
+                        @else
+                            <div class="photo-placeholder">Photo<br>Here</div>
+                        @endif
+                    </div>
+                    <div class="sig-area">
+                        <div class="sig-box">
+                            @if($beneficiary->seniorCitizen->signature)
+                                <img src="{{ Storage::url($beneficiary->seniorCitizen->signature) }}" alt="Signature">
                             @endif
                         </div>
-                        <div class="sig-area">
-                            <div class="sig-box">
-                                @if($beneficiary->seniorCitizen->signature)
-                                    <img src="{{ Storage::url($beneficiary->seniorCitizen->signature) }}" alt="Signature">
-                                @endif
-                            </div>
-                            <div class="sig-label">Signature</div>
+                        <div class="sig-label">Signature</div>
+                    </div>
+
+                    {{-- QR Code on front of ID --}}
+                    @php
+                        $qrToken = $beneficiary->seniorCitizen->qr_token;
+                        $qrContent = 'OSCA Payroll Claim|ID:' . ($beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number) . '|Token:' . $qrToken;
+                    @endphp
+                    <div class="qr-front-box">
+                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode($qrContent) }}" alt="QR Code">
+                    </div>
+                    <div class="qr-label">Verify Online</div>
+                </div>
+
+                {{-- RIGHT COLUMN: Details --}}
+                <div class="right">
+
+                    {{-- ID Number --}}
+                    <div class="id-number-row">
+                        <span class="id-number-badge">{{ $beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number }}</span>
+                    </div>
+
+                    {{-- Name Block --}}
+                    <div class="name-block">
+                        <div class="name-field">
+                            <span class="name-field-label">Last Name</span>
+                            <span class="name-field-value">{{ strtoupper($beneficiary->seniorCitizen->last_name) }}@if($beneficiary->seniorCitizen->suffix) {{ strtoupper($beneficiary->seniorCitizen->suffix) }}@endif</span>
+                        </div>
+                        <div class="name-field">
+                            <span class="name-field-label">First Name</span>
+                            <span class="name-field-value">{{ strtoupper($beneficiary->seniorCitizen->first_name) }}</span>
+                        </div>
+                        <div class="name-field">
+                            <span class="name-field-label">Middle Name</span>
+                            <span class="name-field-value small">{{ $beneficiary->seniorCitizen->middle_name ? strtoupper($beneficiary->seniorCitizen->middle_name) : '—' }}</span>
                         </div>
                     </div>
 
-                    {{-- RIGHT COLUMN: Details --}}
-                    <div class="front-right">
-
-                        {{-- ID Number --}}
-                        <div class="id-number-row">
-                            <span class="id-number-badge">{{ $beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number }}</span>
+                    {{-- DOB / Gender / Issue Date --}}
+                    <div class="details-row">
+                        <div class="detail-cell dob-cell">
+                            <span class="detail-label">DOB</span>
+                            <span class="detail-value">
+                                {{ $beneficiary->seniorCitizen->date_of_birth ? $beneficiary->seniorCitizen->date_of_birth->format('M d, Y') : 'N/A' }}
+                            </span>
                         </div>
-
-                        {{-- Name Block --}}
-                        <div class="name-block">
-                            <div class="name-field">
-                                <span class="name-field-label">Last Name</span>
-                                <span class="name-field-value">{{ strtoupper($beneficiary->seniorCitizen->last_name) }}@if($beneficiary->seniorCitizen->suffix) {{ strtoupper($beneficiary->seniorCitizen->suffix) }}@endif</span>
-                            </div>
-                            <div class="name-field">
-                                <span class="name-field-label">First Name</span>
-                                <span class="name-field-value">{{ strtoupper($beneficiary->seniorCitizen->first_name) }}</span>
-                            </div>
-                            <div class="name-field">
-                                <span class="name-field-label">Middle Name</span>
-                                <span class="name-field-value small">{{ $beneficiary->seniorCitizen->middle_name ? strtoupper($beneficiary->seniorCitizen->middle_name) : '—' }}</span>
-                            </div>
+                        <div class="detail-cell gender-cell">
+                            <span class="detail-label">Sex</span>
+                            <span class="detail-value">
+                                {{ strtoupper(rtrim(optional($beneficiary->seniorCitizen->gender)->name ?? 'N/A', '0123456789')) }}
+                            </span>
                         </div>
-
-                        {{-- DOB / Gender / Issue Date --}}
-                        <div class="details-row">
-                            <div class="detail-cell dob-cell">
-                                <span class="detail-label">DOB</span>
-                                <span class="detail-value">
-                                    {{ $beneficiary->seniorCitizen->date_of_birth ? $beneficiary->seniorCitizen->date_of_birth->format('M d, Y') : 'N/A' }}
-                                </span>
-                            </div>
-                            <div class="detail-cell gender-cell">
-                                <span class="detail-label">Sex</span>
-                                <span class="detail-value">
-                                    {{ strtoupper(rtrim(optional($beneficiary->seniorCitizen->gender)->name ?? 'N/A', '0123456789')) }}
-                                </span>
-                            </div>
-                            <div class="detail-cell issue-cell">
-                                <span class="detail-label">Issue Date</span>
-                                <span class="detail-value">
-                                    {{ $beneficiary->seniorCitizen->effective_date ? $beneficiary->seniorCitizen->effective_date->format('M d, Y') : 'N/A' }}
-                                </span>
-                            </div>
+                        <div class="detail-cell issue-cell">
+                            <span class="detail-label">Issue</span>
+                            <span class="detail-value">
+                                {{ $beneficiary->seniorCitizen->effective_date ? $beneficiary->seniorCitizen->effective_date->format('M d, Y') : 'N/A' }}
+                            </span>
                         </div>
+                    </div>
 
-                        {{-- Address --}}
-                        <div class="address-block">
-                            <span class="address-label">Address</span>
-                            <div class="address-value">
-                                @php
-                                    $parts = array_filter([
-                                        $beneficiary->seniorCitizen->house_no,
-                                        $beneficiary->seniorCitizen->street,
-                                        $beneficiary->seniorCitizen->purok_name ? 'Purok ' . $beneficiary->seniorCitizen->purok_name : null,
-                                        optional($beneficiary->seniorCitizen->barangay)->name ? 'Brgy. ' . $beneficiary->seniorCitizen->barangay->name : null,
-                                        $beneficiary->seniorCitizen->city_municipality,
-                                        $beneficiary->seniorCitizen->province,
-                                    ]);
-                                    echo implode(', ', $parts);
-                                @endphp
-                            </div>
+                    {{-- Address --}}
+                    <div class="address-block">
+                        <span class="address-label">Address</span>
+                        <div class="address-value">
+                            @php
+                                $parts = array_filter([
+                                    $beneficiary->seniorCitizen->house_no,
+                                    $beneficiary->seniorCitizen->street,
+                                    $beneficiary->seniorCitizen->purok_name ? 'Purok ' . $beneficiary->seniorCitizen->purok_name : null,
+                                    optional($beneficiary->seniorCitizen->barangay)->name ? 'Brgy. ' . $beneficiary->seniorCitizen->barangay->name : null,
+                                    $beneficiary->seniorCitizen->city_municipality,
+                                    $beneficiary->seniorCitizen->province,
+                                ]);
+                                echo implode(', ', $parts);
+                            @endphp
                         </div>
+                    </div>
 
-                        {{-- Payroll Info --}}
-                        <div class="payroll-section">
-                            <div class="payroll-label">Fund Provider</div>
-                            <div class="payroll-value">{{ $beneficiary->funding->provider ?? 'N/A' }}</div>
-                            
-                            <div class="payroll-label" style="margin-top: 1mm;">Amount</div>
-                            <div class="payroll-value payroll-amount">Php {{ number_format($beneficiary->funding->amount ?? 0, 2) }}</div>
-                            
-                            <div class="payroll-label" style="margin-top: 1mm;">Payment Date</div>
-                            <div class="payroll-value">{{ $beneficiary->created_at ? $beneficiary->created_at->format('M d, Y') : 'N/A' }}</div>
-                        </div>
-
+                    {{-- Payroll Info --}}
+                    <div class="payroll-section">
+                        <div class="payroll-label">Fund Provider</div>
+                        <div class="payroll-value">{{ $funding->provider ?? 'N/A' }}</div>
+                        
+                        <div class="payroll-label" style="margin-top: 1mm;">Amount</div>
+                        <div class="payroll-value payroll-amount">₱{{ number_format($beneficiary->funding->amount ?? 0, 2) }}</div>
                     </div>
                 </div>
-
-                {{-- QR Code for Verification --}}
-                @php
-                    $qrToken = $beneficiary->seniorCitizen->qr_token;
-                    $qrContent = 'OSCA Payroll Claim Stub|ID:' . ($beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number) . '|Token:' . $qrToken;
-                @endphp
-
-                <div class="qr-box">
-                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode($qrContent) }}" 
-                         alt="Payroll QR Code">
-                </div>
-                <div class="qr-label">Scan to Verify</div>
-
             </div>
+
         </div>
     </div>
 </div>
