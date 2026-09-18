@@ -150,34 +150,39 @@
             <div class="modal-body">
 
                 <!-- Row 1: Name & Username -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-row cols-2">
                     <div class="form-group">
-                        <label for="um_name" class="form-label">Full Name <span style="color:red;">*</span></label>
+                        <label for="um_name" class="form-label">Full Name <span class="required">*</span></label>
                         <input type="text" id="um_name" wire:model="name" class="form-input" placeholder="e.g. Juan Dela Cruz">
-                        @error('name') <span style="font-size: 0.8rem; color: red;">{{ $message }}</span> @enderror
+                        @error('name') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
-                        <label for="um_username" class="form-label">Username <span style="color:red;">*</span></label>
+                        <label for="um_username" class="form-label">Username <span class="required">*</span></label>
                         <input type="text" id="um_username" wire:model="username" class="form-input" placeholder="e.g. jdelacruz">
-                        @error('username') <span style="font-size: 0.8rem; color: red;">{{ $message }}</span> @enderror
+                        @error('username') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
                 <!-- Row 2: Email -->
                 <div class="form-group">
-                    <label for="um_email" class="form-label">Email Address <span style="color:red;">*</span></label>
+                    <label for="um_email" class="form-label">Email Address <span class="required">*</span></label>
                     <input type="email" id="um_email" wire:model="email" class="form-input" placeholder="e.g. jdelacruz@osca.gov.ph">
-                    @error('email') <span style="font-size: 0.8rem; color: red;">{{ $message }}</span> @enderror
+                    @error('email') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
 
                 <!-- Row 3: Password & Confirm -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-row cols-2">
                     <div class="form-group">
                         <label for="um_password" class="form-label">
-                            Password {{ $isEditMode ? '(leave blank to keep current)' : '' }} {!! !$isEditMode ? '<span style="color:red;">*</span>' : '' !!}
+                            Password
+                            @if($isEditMode)
+                                <span class="optional">(leave blank to keep)</span>
+                            @else
+                                <span class="required">*</span>
+                            @endif
                         </label>
                         <input type="password" id="um_password" wire:model="password" class="form-input" placeholder="••••••••">
-                        @error('password') <span style="font-size: 0.8rem; color: red;">{{ $message }}</span> @enderror
+                        @error('password') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
                         <label for="um_password_confirmation" class="form-label">Confirm Password</label>
@@ -186,7 +191,7 @@
                 </div>
 
                 <!-- Row 4: Office & Access Level -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-row cols-2">
                     <div class="form-group">
                         <label for="um_office_id" class="form-label">Office</label>
                         <select id="um_office_id" wire:model="office_id" class="form-input">
@@ -195,7 +200,7 @@
                                 <option value="{{ $office->id }}">{{ $office->name }}</option>
                             @endforeach
                         </select>
-                        @error('office_id') <span style="font-size: 0.8rem; color: red;">{{ $message }}</span> @enderror
+                        @error('office_id') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                     <div class="form-group">
                         <label for="um_access_level_id" class="form-label">Access Level</label>
@@ -205,14 +210,16 @@
                                 <option value="{{ $level->id }}">{{ $level->name }}</option>
                             @endforeach
                         </select>
-                        @error('access_level_id') <span style="font-size: 0.8rem; color: red;">{{ $message }}</span> @enderror
+                        @error('access_level_id') <span class="text-danger">{{ $message }}</span> @enderror
                     </div>
                 </div>
 
                 <!-- Row 5: Active Status -->
-                <div class="form-group" style="display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem;">
-                    <input type="checkbox" id="um_is_active" wire:model="is_active">
-                    <label for="um_is_active" style="margin: 0;">Active</label>
+                <div class="form-group">
+                    <label class="form-check" for="um_is_active">
+                        <input type="checkbox" id="um_is_active" wire:model="is_active">
+                        <span class="form-check-label">Mark as Active</span>
+                    </label>
                 </div>
 
             </div>

@@ -30,7 +30,7 @@
                     <div class="avatar">{{ strtoupper(substr(auth()->user()->name ?? 'A', 0, 1)) }}</div>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                         stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        style="color: var(--text-secondary);">
+                        style="color: rgba(255,255,255,0.6);">
                         <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                 </div>
@@ -121,14 +121,23 @@
                     </ul>
                 </li>
                 <li>
-                    <a href="/payroll" wire:navigate class="{{ request()->is('payroll') ? 'active' : '' }}">
+                    <a href="#" class="{{ request()->is('payroll', 'payout-cutoff*') ? 'active' : '' }}">
                         <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
                             <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
                         </svg>
                         Payroll
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            style="margin-left: 4px;">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
                     </a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/payroll" wire:navigate>Payroll Listing</a></li>
+                        <li><a href="/payout-cutoff" wire:navigate>Payout Cutoffs</a></li>
+                    </ul>
                 </li>
                 <li>
                     <a href="/reports" wire:navigate class="{{ request()->is('reports') ? 'active' : '' }}">
@@ -211,10 +220,10 @@
                     <form method="POST" action="/logout" style="margin: 0;">
                         @csrf
                         <button type="submit"
-                            style="display: flex; align-items: center; gap: 0.5rem; padding: 0.5rem 1rem; border-radius: 2rem; border: none; background: rgba(239, 68, 68, 0.1); color: #ef4444; font-weight: 600; font-size: 0.95rem; cursor: pointer; transition: all 0.3s ease; box-shadow: none;"
-                            onmouseover="this.style.backgroundColor='rgba(239, 68, 68, 0.2)'; this.style.transform='translateY(-2px)'"
-                            onmouseout="this.style.backgroundColor='rgba(239, 68, 68, 0.1)'; this.style.transform='none'">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24"
+                            style="display: flex; align-items: center; gap: 0.4rem; padding: 0.4rem 0.875rem; border-radius: 0.375rem; border: 1px solid rgba(255,255,255,0.2); background: rgba(255,255,255,0.08); color: rgba(255,255,255,0.85); font-weight: 600; font-size: 0.8125rem; cursor: pointer; transition: all 0.2s; font-family: inherit;"
+                            onmouseover="this.style.backgroundColor='rgba(255,255,255,0.18)'; this.style.borderColor='rgba(255,255,255,0.35)'"
+                            onmouseout="this.style.backgroundColor='rgba(255,255,255,0.08)'; this.style.borderColor='rgba(255,255,255,0.2)'">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
                                 fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                 stroke-linejoin="round">
                                 <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>

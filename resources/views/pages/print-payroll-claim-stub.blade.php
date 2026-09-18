@@ -3,77 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCA Payroll Claim Stub - {{ $beneficiary->seniorCitizen->id_number }}</title>
+    <title>Payroll Claim Stub — {{ $beneficiary->seniorCitizen->id_number }}</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-        /* ID Card dimensions: 86mm x 54mm */
+        /* ── Card dimensions ── */
         :root {
             --card-w: 86mm;
             --card-h: 54mm;
             --black:  #111111;
             --gray:   #555555;
             --light:  #f5f5f5;
-            --border: #aaaaaa;
+            --border: #bbbbbb;
+            --accent: #1a4b8c; /* OSCA blue accent */
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         html, body {
-            margin: 0;
-            padding: 0;
             font-family: 'Inter', sans-serif;
-            background: #e8e8e8;
+            background: #d8d8d8;
             -webkit-print-color-adjust: exact;
             print-color-adjust: exact;
         }
 
+        /* ── Screen wrapper ── */
+        .screen-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            gap: 6mm;
+            padding: 8mm;
+        }
+        .screen-label {
+            font-size: 11pt;
+            font-weight: 700;
+            color: #444;
+            text-align: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .btn-print {
+            padding: 8px 22px;
+            font-size: 10pt;
+            font-weight: 600;
+            cursor: pointer;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-family: 'Inter', sans-serif;
+        }
+
+        /* ── STUB CARD ── */
         .stub-page {
             width: var(--card-w);
             height: var(--card-h);
             background: #ffffff;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 3px 14px rgba(0,0,0,0.18);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.22);
             display: flex;
             flex-direction: column;
         }
 
-        .watermark {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .watermark span {
-            font-size: 12pt;
-            font-weight: 900;
-            color: rgba(0,0,0,0.04);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            white-space: nowrap;
-            transform: rotate(-30deg);
-            line-height: 1;
-        }
+        /* ── Watermark ── */
         .watermark-logo {
             position: absolute;
             inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             pointer-events: none;
             z-index: 0;
-            overflow: hidden;
-            background-size: 32mm;
+            background-size: 28mm;
             background-position: center;
             background-repeat: no-repeat;
-            opacity: 0.07;
+            opacity: 0.06;
         }
 
+        /* ── Content layer ── */
         .content-layer {
             position: relative;
             z-index: 10;
@@ -82,282 +90,237 @@
             height: 100%;
         }
 
+        /* ── HEADER ── */
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1.5mm 2mm 1mm 2mm;
-            border-bottom: 0.7mm solid #1a1a1a;
+            padding: 1.2mm 2mm 0.8mm 2mm;
+            border-bottom: 0.8mm solid var(--accent);
+            background: linear-gradient(to right, #f0f4fa, #fff, #f0f4fa);
         }
-
         .header-logo {
-            width: 13mm;
-            height: 13mm;
+            width: 11mm;
+            height: 11mm;
             object-fit: contain;
             flex-shrink: 0;
         }
-
         .header-text {
             text-align: center;
             flex: 1;
-            padding: 0 2mm;
+            padding: 0 1.5mm;
         }
         .header-text .republic {
-            font-size: 5.5pt;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--black);
-            line-height: 1.4;
-        }
-        .header-text .city-name {
-            font-size: 7.5pt;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--black);
-            line-height: 1.4;
-        }
-
-        /* Print stub header - location info */
-        .print-header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            padding: 0.8mm 2mm;
-            font-size: 5pt;
-            color: var(--black);
-            gap: 3mm 1mm;
-        }
-        .print-header .header-item {
-            white-space: nowrap;
-            text-align: center;
-        }
-        .print-header .header-label {
-            font-weight: 600;
+            font-size: 4.5pt;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
             color: var(--gray);
-            display: block;
-            font-size: 4pt;
+            line-height: 1.3;
         }
-        .print-header .header-value {
+        .header-text .city-name {
+            font-size: 5.5pt;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
             color: var(--black);
+            line-height: 1.3;
+        }
+        .header-text .stub-type-label {
+            font-size: 6.5pt;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 0.5mm;
+            line-height: 1.2;
         }
 
+        /* ── META ROW ── */
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.7mm 2mm;
+            background: var(--accent);
+            gap: 2mm;
+        }
+        .meta-cell {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .meta-label {
+            font-size: 3.2pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 0.3px;
+        }
+        .meta-val {
+            font-size: 4.5pt;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        /* ── BODY ── */
         .body {
             display: flex;
             flex: 1;
-            padding: 1.5mm 2mm 1.5mm 2mm;
-            gap: 2mm;
+            padding: 1.2mm 1.5mm;
+            gap: 1.8mm;
         }
 
+        /* LEFT column */
         .left {
-            width: 21mm;
+            width: 18mm;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 0;
             flex-shrink: 0;
         }
-
         .photo-box {
-            width: 21mm;
-            height: 24mm;
-            border: 0.5mm solid var(--border);
+            width: 18mm;
+            height: 20mm;
+            border: 0.4mm solid var(--border);
             background: var(--light);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            flex-shrink: 0;
         }
-        .photo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .photo-placeholder {
-            font-size: 4pt;
-            color: #999;
-            text-align: center;
-            padding: 1mm;
-        }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-placeholder { font-size: 4pt; color: #999; text-align: center; }
 
-        .sig-area {
-            width: 21mm;
-            margin-top: 2mm;
-            text-align: center;
-        }
+        .sig-area { width: 18mm; margin-top: 1.2mm; text-align: center; }
         .sig-box {
-            width: 21mm;
-            height: 7mm;
+            width: 18mm;
+            height: 5.5mm;
             border-bottom: 0.4mm solid var(--black);
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            padding-bottom: 0.5mm;
+            padding-bottom: 0.3mm;
             overflow: hidden;
         }
-        .sig-box img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .sig-label {
-            font-size: 4pt;
-            color: var(--gray);
-            margin-top: 0.5mm;
-            letter-spacing: 0.5px;
-        }
+        .sig-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .sig-label { font-size: 3.2pt; color: var(--gray); margin-top: 0.3mm; letter-spacing: 0.3px; }
 
+        .qr-container { margin-top: 1mm; display: flex; flex-direction: column; align-items: center; }
+        .qr-box {
+            width: 11mm;
+            height: 11mm;
+            border: 0.3mm solid var(--border);
+            background: #fff;
+            padding: 0.4mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qr-box img { width: 100%; height: 100%; object-fit: contain; }
+        .qr-label { font-size: 3.2pt; color: var(--gray); margin-top: 0.3mm; }
+
+        /* RIGHT column */
         .right {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            padding-left: 1mm;
         }
 
-        .id-number-row {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 1mm;
-        }
-        .id-number-badge {
-            font-size: 6.5pt;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--black);
-        }
-
-        .name-block {
-            display: flex;
-            align-items: flex-start;
-            gap: 2mm;
-            margin-bottom: 1mm;
-        }
-        .name-labels {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-        .name-field {
-            margin-bottom: 1mm;
-        }
-        .name-field-label {
-            font-size: 4pt;
-            color: var(--gray);
-            font-style: italic;
-            line-height: 1.1;
-            display: block;
-        }
-        .name-field-value {
-            font-size: 8pt;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--black);
-            line-height: 1.1;
-            display: block;
-        }
-        .name-field-value.small {
-            font-size: 7pt;
-        }
-
-        /* QR Code container - enlarged */
-        .qr-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .qr-box {
-            width: 12mm;
-            height: 12mm;
-            border: 0.4mm solid var(--border);
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5mm;
-        }
-        .qr-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .qr-label {
-            font-size: 4pt;
-            color: var(--gray);
-            text-align: center;
-            margin-top: 0.4mm;
-            line-height: 1.1;
-        }
-
-        .details-row {
-            display: flex;
-            gap: 2mm;
-            margin-bottom: 0.5mm;
-        }
-        .detail-cell {
-            display: flex;
-            flex-direction: column;
-        }
-        .detail-cell.dob-cell { flex: 2; }
-        .detail-cell.gender-cell { flex: 1; }
-        .detail-cell.issue-cell { flex: 2; }
-
-        .detail-label {
-            font-size: 3.8pt;
-            color: var(--gray);
-            font-style: italic;
-            line-height: 1.2;
-        }
-        .detail-value {
-            font-size: 6pt;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: var(--black);
-        }
-
-        .address-block {
-            margin-top: 0;
-        }
-        .address-label {
-            font-size: 3.8pt;
-            color: var(--gray);
-            font-style: italic;
-            line-height: 1.2;
-        }
-        .address-value {
+        /* ID badge */
+        .id-badge-row { display: flex; justify-content: flex-end; margin-bottom: 0.8mm; }
+        .id-badge {
             font-size: 5.5pt;
-            font-weight: 600;
-            color: var(--black);
-            line-height: 1.3;
-            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
         }
 
-        .payroll-section {
-            margin-top: auto;
-            padding-top: 1mm;
-            border-top: 0.3mm solid #aaa;
-        }
-        .payroll-label {
-            font-size: 4pt;
+        /* Name block */
+        .name-block { margin-bottom: 0.8mm; }
+        .name-field { margin-bottom: 0.6mm; }
+        .nf-label {
+            font-size: 3.2pt;
             color: var(--gray);
             font-style: italic;
-            margin-bottom: 0.3mm;
+            line-height: 1.1;
+            display: block;
+            text-transform: uppercase;
         }
-        .payroll-value {
-            font-size: 7pt;
-            font-weight: 600;
+        .nf-value {
+            font-size: 7.5pt;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
             color: var(--black);
+            line-height: 1.0;
+            display: block;
         }
-        .payroll-amount {
-            color: #16a34a;
+        .nf-value.sm { font-size: 6.5pt; font-weight: 700; }
+
+        /* Detail row */
+        .detail-row { display: flex; gap: 1.5mm; margin-bottom: 0.8mm; }
+        .d-cell { display: flex; flex-direction: column; flex: 1; }
+        .d-label { font-size: 3.2pt; color: var(--gray); font-style: italic; line-height: 1.2; text-transform: uppercase; }
+        .d-value { font-size: 5.5pt; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; color: var(--black); }
+
+        /* ── PAYOUT STRIP ── */
+        .payout-strip {
+            margin-top: auto;
+            display: flex;
+            align-items: stretch;
+            border: 0.5mm solid var(--accent);
+            border-radius: 0.5mm;
+            overflow: hidden;
+        }
+        .payout-left {
+            flex: 1;
+            background: #f0f4fa;
+            padding: 0.8mm 1.2mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .payout-label {
+            font-size: 3pt;
+            text-transform: uppercase;
             font-weight: 700;
+            color: var(--gray);
+            letter-spacing: 0.3px;
+        }
+        .payout-provider {
+            font-size: 5.5pt;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .payout-amount-box {
+            background: var(--accent);
+            padding: 0.8mm 2.5mm;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 18mm;
+        }
+        .payout-amount-label {
+            font-size: 3pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.75);
+            letter-spacing: 0.5px;
+        }
+        .payout-amount-value {
+            font-size: 9pt;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
         }
 
+        /* ── PRINT ── */
         @page {
             size: 86mm 54mm;
             margin: 0;
@@ -370,167 +333,22 @@
                 margin: 0;
                 width: 86mm;
             }
-            .stub-page {
-                box-shadow: none;
-                page-break-before: always;
-            }
-            .stub-page:first-child {
-                page-break-before: avoid;
-            }
+            .screen-wrapper { display: contents; }
+            .screen-label, .btn-print { display: none; }
+            .stub-page { box-shadow: none; }
         }
     </style>
 </head>
 <body onload="window.print()">
 
-<div class="stub-page">
-    <div class="watermark-logo" style="background-image: url('{{ asset('images/mabalacat_seal.png') }}');"></div>
+<div class="screen-wrapper">
+    <div class="screen-label">Payroll Claim Stub Preview</div>
+    <button class="btn-print" onclick="window.print()">🖨 Print Stub</button>
 
-    <div class="content-layer">
-        
-        {{-- Header --}}
-        <div class="header">
-            <img src="{{ asset('images/mabalacat_seal.png') }}" class="header-logo" alt="Mabalacat City Seal">
-            <div class="header-text">
-                <div class="republic">OFFICE OF THE SENIOR CITIZENS AFFAIRS</div>
-                <div class="city-name">MABALACAT CITY</div>
-            </div>
-            <img src="{{ asset('images/osca_logo.png') }}" class="header-logo" alt="OSCA Logo">
-        </div>
-
-        {{-- Print Stub Header - Location Info --}}
-        <div class="print-header">
-            <div class="header-item">
-                <span class="header-label">City</span>
-                <span class="header-value">MABALACAT</span>
-            </div>
-            <div class="header-item">
-                <span class="header-label">Run Date</span>
-                <span class="header-value">{{ now()->format('M d, Y') }}</span>
-            </div>
-            <div class="header-item">
-                <span class="header-label">Barangay</span>
-                <span class="header-value">{{ $beneficiary->seniorCitizen->barangay->name ?? 'N/A' }}</span>
-            </div>
-            <div class="header-item">
-                <span class="header-label">Purok</span>
-                <span class="header-value">{{ $beneficiary->seniorCitizen->purok_name ?? 'N/A' }}</span>
-            </div>
-            <div class="header-item">
-                <span class="header-label">Leader</span>
-                <span class="header-value">{{ $beneficiary->seniorCitizen->purokLeader ? $beneficiary->seniorCitizen->purokLeader->last_name . ', ' . $beneficiary->seniorCitizen->purokLeader->first_name : 'N/A' }}</span>
-            </div>
-        </div>
-
-        {{-- Body --}}
-        <div class="body">
-
-            {{-- LEFT COLUMN: Photo + Signature + QR --}}
-            <div class="left">
-                <div class="photo-box">
-                    @if($beneficiary->seniorCitizen->id_picture)
-                        <img src="{{ Storage::url($beneficiary->seniorCitizen->id_picture) }}" alt="Photo">
-                    @else
-                        <div class="photo-placeholder">Photo<br>Here</div>
-                    @endif
-                </div>
-                <div class="sig-area">
-                    <div class="sig-box">
-                        @if($beneficiary->seniorCitizen->signature)
-                            <img src="{{ Storage::url($beneficiary->seniorCitizen->signature) }}" alt="Signature">
-                        @endif
-                    </div>
-                    <div class="sig-label">Signature</div>
-                </div>
-
-                {{-- QR Code on FRONT --}}
-                @php
-                    $qrToken = $beneficiary->seniorCitizen->qr_token;
-                    $qrContent = 'OSCA Payroll Claim|ID:' . ($beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number) . '|Token:' . $qrToken;
-                @endphp
-                <div class="qr-container">
-                    <div class="qr-box">
-                        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data={{ urlencode($qrContent) }}" alt="QR Code">
-                    </div>
-                    <div class="qr-label">Verify</div>
-                </div>
-            </div>
-
-            {{-- RIGHT COLUMN: Details --}}
-            <div class="right">
-
-                {{-- ID Number --}}
-                <div class="id-number-row">
-                    <span class="id-number-badge">{{ $beneficiary->seniorCitizen->id_number ?? $beneficiary->seniorCitizen->new_id_number }}</span>
-                </div>
-
-                {{-- Name Block --}}
-                <div class="name-block">
-                    <div class="name-labels">
-                        <div class="name-field">
-                            <span class="name-field-label">Last Name</span>
-                            <span class="name-field-value">{{ strtoupper($beneficiary->seniorCitizen->last_name) }}@if($beneficiary->seniorCitizen->suffix) {{ strtoupper($beneficiary->seniorCitizen->suffix) }}@endif</span>
-                        </div>
-                        <div class="name-field">
-                            <span class="name-field-label">First Name</span>
-                            <span class="name-field-value">{{ strtoupper($beneficiary->seniorCitizen->first_name) }}</span>
-                        </div>
-                        <div class="name-field">
-                            <span class="name-field-label">Middle Name</span>
-                            <span class="name-field-value small">{{ $beneficiary->seniorCitizen->middle_name ? strtoupper($beneficiary->seniorCitizen->middle_name) : '—' }}</span>
-                        </div>
-                    </div>
-                </div>
-
-                {{-- DOB / Gender / Issue Date --}}
-                <div class="details-row">
-                    <div class="detail-cell dob-cell">
-                        <span class="detail-label">DOB</span>
-                        <span class="detail-value">
-                            {{ $beneficiary->seniorCitizen->date_of_birth ? $beneficiary->seniorCitizen->date_of_birth->format('M d, Y') : 'N/A' }}
-                        </span>
-                    </div>
-                    <div class="detail-cell gender-cell">
-                        <span class="detail-label">Sex</span>
-                        <span class="detail-value">
-                            {{ strtoupper(rtrim(optional($beneficiary->seniorCitizen->gender)->name ?? 'N/A', '0123456789')) }}
-                        </span>
-                    </div>
-                    <div class="detail-cell issue-cell">
-                        <span class="detail-label">Issue</span>
-                        <span class="detail-value">
-                            {{ $beneficiary->seniorCitizen->effective_date ? $beneficiary->seniorCitizen->effective_date->format('M d, Y') : 'N/A' }}
-                        </span>
-                    </div>
-                </div>
-
-                {{-- Address --}}
-                <div class="address-block">
-                    <span class="address-label">Address</span>
-                    <div class="address-value">
-                        @php
-                            $parts = array_filter([
-                                $beneficiary->seniorCitizen->house_no,
-                                $beneficiary->seniorCitizen->street,
-                                $beneficiary->seniorCitizen->purok_name ? 'Purok ' . $beneficiary->seniorCitizen->purok_name : null,
-                                optional($beneficiary->seniorCitizen->barangay)->name ? 'Brgy. ' . $beneficiary->seniorCitizen->barangay->name : null,
-                                $beneficiary->seniorCitizen->city_municipality,
-                                $beneficiary->seniorCitizen->province,
-                            ]);
-                            echo implode(', ', $parts);
-                        @endphp
-                    </div>
-                </div>
-
-                {{-- Payroll Info --}}
-                <div class="payroll-section">
-                    <div class="payroll-label">Fund Provider</div>
-                    <div class="payroll-value">{{ $funding->provider ?? 'N/A' }}</div>
-                    
-                    <div class="payroll-label" style="margin-top: 1mm;">Amount</div>
-                    <div class="payroll-value payroll-amount">₱{{ number_format($beneficiary->funding->amount ?? 0, 2) }}</div>
-                </div>
-            </div>
-        </div>
-
+    <div class="stub-page">
+        @include('pages.print-payroll-claim-stub-single', ['beneficiary' => $beneficiary, 'funding' => $funding])
     </div>
 </div>
+
+</body>
+</html>

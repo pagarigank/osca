@@ -3,92 +3,91 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OSCA Payroll Claim Stubs - {{ $funding->provider }}</title>
+    <title>Payroll Claim Stubs — {{ $funding->fund_source }}</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Special+Elite&family=Inter:wght@300;400;500;600;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
 
-        /* ID Card dimensions: 86mm x 54mm */
+        /* ── Card dimensions ── */
         :root {
             --card-w: 86mm;
             --card-h: 54mm;
             --black:  #111111;
             --gray:   #555555;
+            --light:  #f5f5f5;
+            --border: #bbbbbb;
+            --accent: #1a4b8c;
         }
 
-        * { box-sizing: border-box; }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
         html, body {
-            margin: 0;
-            padding: 0;
             font-family: 'Inter', sans-serif;
-            background: #fff;
+            background: #ccc;
+            -webkit-print-color-adjust: exact;
+            print-color-adjust: exact;
         }
 
-        .screen-label {
-            font-family: 'Inter', sans-serif;
-            font-size: 14pt;
-            color: #333;
-            font-weight: 600;
+        /* ── Screen header ── */
+        .screen-header {
+            background: var(--accent);
+            color: #fff;
             text-align: center;
-            margin-bottom: 10mm;
+            padding: 5mm 10mm;
+            font-size: 10pt;
+            font-weight: 700;
+            letter-spacing: 1px;
             text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .screen-header .btn-print {
+            padding: 6px 18px;
+            font-size: 9pt;
+            font-weight: 700;
+            cursor: pointer;
+            background: #fff;
+            color: var(--accent);
+            border: none;
+            border-radius: 5px;
+            font-family: 'Inter', sans-serif;
         }
 
-        /* Container for multiple stubs on one page */
+        /* ── Container ── */
         .stubs-container {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
             gap: 5mm;
-            padding: 3mm;
+            padding: 6mm;
         }
 
+        /* ── STUB CARD ── */
         .stub-page {
             width: var(--card-w);
             height: var(--card-h);
             background: #ffffff;
             position: relative;
             overflow: hidden;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+            box-shadow: 0 3px 14px rgba(0,0,0,0.2);
             display: flex;
             flex-direction: column;
+            page-break-inside: avoid;
         }
 
-        .watermark {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
-            z-index: 0;
-            overflow: hidden;
-        }
-        .watermark span {
-            font-size: 12pt;
-            font-weight: 900;
-            color: rgba(0,0,0,0.04);
-            text-transform: uppercase;
-            letter-spacing: 3px;
-            white-space: nowrap;
-            transform: rotate(-30deg);
-            line-height: 1;
-        }
+        /* ── Watermark ── */
         .watermark-logo {
             position: absolute;
             inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
             pointer-events: none;
             z-index: 0;
-            overflow: hidden;
-            background-size: 32mm;
+            background-size: 28mm;
             background-position: center;
             background-repeat: no-repeat;
-            opacity: 0.07;
+            opacity: 0.06;
         }
 
+        /* ── Content layer ── */
         .content-layer {
             position: relative;
             z-index: 10;
@@ -97,331 +96,261 @@
             height: 100%;
         }
 
+        /* ── HEADER ── */
         .header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            padding: 1.5mm 2mm 1mm 2mm;
-            border-bottom: 0.7mm solid #1a1a1a;
+            padding: 1.2mm 2mm 0.8mm 2mm;
+            border-bottom: 0.8mm solid var(--accent);
+            background: linear-gradient(to right, #f0f4fa, #fff, #f0f4fa);
         }
-
         .header-logo {
-            width: 13mm;
-            height: 13mm;
+            width: 11mm;
+            height: 11mm;
             object-fit: contain;
             flex-shrink: 0;
         }
-
         .header-text {
             text-align: center;
             flex: 1;
-            padding: 0 2mm;
+            padding: 0 1.5mm;
         }
         .header-text .republic {
-            font-size: 5.5pt;
-            letter-spacing: 1.5px;
-            text-transform: uppercase;
-            color: var(--black);
-            line-height: 1.4;
-        }
-        .header-text .city-name {
-            font-size: 7.5pt;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--black);
-            line-height: 1.4;
-        }
-
-        /* Print stub header - location info */
-        .print-header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            padding: 0.8mm 2mm;
-            font-size: 5pt;
-            color: var(--black);
-            gap: 3mm 1mm;
-        }
-        .print-header .header-item {
-            white-space: nowrap;
-            text-align: center;
-        }
-        .print-header .header-label {
-            font-weight: 600;
+            font-size: 4.5pt;
+            letter-spacing: 0.8px;
             text-transform: uppercase;
             color: var(--gray);
-            display: block;
-            font-size: 4pt;
+            line-height: 1.3;
         }
-        .print-header .header-value {
+        .header-text .city-name {
+            font-size: 5.5pt;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
             color: var(--black);
+            line-height: 1.3;
+        }
+        .header-text .stub-type-label {
+            font-size: 6.5pt;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 0.5mm;
+            line-height: 1.2;
         }
 
+        /* ── META ROW ── */
+        .meta-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.7mm 2mm;
+            background: var(--accent);
+            gap: 2mm;
+        }
+        .meta-cell { display: flex; flex-direction: column; align-items: center; }
+        .meta-label {
+            font-size: 3.2pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.7);
+            letter-spacing: 0.3px;
+        }
+        .meta-val {
+            font-size: 4.5pt;
+            font-weight: 700;
+            color: #fff;
+            white-space: nowrap;
+        }
+
+        /* ── BODY ── */
         .body {
             display: flex;
             flex: 1;
-            padding: 1.5mm 2mm 1.5mm 2mm;
-            gap: 2mm;
+            padding: 1.2mm 1.5mm;
+            gap: 1.8mm;
         }
 
+        /* LEFT */
         .left {
-            width: 21mm;
+            width: 18mm;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 0;
             flex-shrink: 0;
         }
-
         .photo-box {
-            width: 21mm;
-            height: 24mm;
-            border: 0.5mm solid var(--border);
+            width: 18mm;
+            height: 20mm;
+            border: 0.4mm solid var(--border);
             background: var(--light);
             display: flex;
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            flex-shrink: 0;
         }
-        .photo-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .photo-placeholder {
-            font-size: 4pt;
-            color: #999;
-            text-align: center;
-            padding: 1mm;
-        }
+        .photo-box img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-placeholder { font-size: 4pt; color: #999; text-align: center; }
 
-        .sig-area {
-            width: 21mm;
-            margin-top: 2mm;
-            text-align: center;
-        }
+        .sig-area { width: 18mm; margin-top: 1.2mm; text-align: center; }
         .sig-box {
-            width: 21mm;
-            height: 7mm;
+            width: 18mm;
+            height: 5.5mm;
             border-bottom: 0.4mm solid var(--black);
             display: flex;
             align-items: flex-end;
             justify-content: center;
-            padding-bottom: 0.5mm;
+            padding-bottom: 0.3mm;
             overflow: hidden;
         }
-        .sig-box img {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .sig-label {
-            font-size: 4pt;
-            color: var(--gray);
-            margin-top: 0.5mm;
-            letter-spacing: 0.5px;
-        }
+        .sig-box img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .sig-label { font-size: 3.2pt; color: var(--gray); margin-top: 0.3mm; letter-spacing: 0.3px; }
 
+        .qr-container { margin-top: 1mm; display: flex; flex-direction: column; align-items: center; }
+        .qr-box {
+            width: 11mm;
+            height: 11mm;
+            border: 0.3mm solid var(--border);
+            background: #fff;
+            padding: 0.4mm;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .qr-box img { width: 100%; height: 100%; object-fit: contain; }
+        .qr-label { font-size: 3.2pt; color: var(--gray); margin-top: 0.3mm; }
+
+        /* RIGHT */
         .right {
             flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
-            padding-left: 1mm;
         }
 
-        .id-number-row {
-            display: flex;
-            justify-content: flex-end;
-            margin-bottom: 1mm;
-        }
-        .id-number-badge {
-            font-size: 6.5pt;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            color: var(--black);
-        }
-
-        .name-block {
-            display: flex;
-            align-items: flex-start;
-            gap: 2mm;
-            margin-bottom: 1mm;
-        }
-        .name-labels {
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-        .name-field {
-            margin-bottom: 1mm;
-        }
-        .name-field-label {
-            font-size: 4pt;
-            color: var(--gray);
-            font-style: italic;
-            line-height: 1.1;
-            display: block;
-        }
-        .name-field-value {
-            font-size: 8pt;
-            font-weight: 700;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            color: var(--black);
-            line-height: 1.1;
-            display: block;
-        }
-        .name-field-value.small {
-            font-size: 7pt;
-        }
-
-        /* QR Code container - enlarged */
-        .qr-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-        }
-        .qr-box {
-            width: 12mm;
-            height: 12mm;
-            border: 0.4mm solid var(--border);
-            background: #ffffff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 0.5mm;
-        }
-        .qr-box img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain;
-        }
-        .qr-label {
-            font-size: 4pt;
-            color: var(--gray);
-            text-align: center;
-            margin-top: 0.4mm;
-            line-height: 1.1;
-        }
-
-        .details-row {
-            display: flex;
-            gap: 2mm;
-            margin-bottom: 0.5mm;
-        }
-        .detail-cell {
-            display: flex;
-            flex-direction: column;
-        }
-        .detail-cell.dob-cell { flex: 2; }
-        .detail-cell.gender-cell { flex: 1; }
-        .detail-cell.issue-cell { flex: 2; }
-
-        .detail-label {
-            font-size: 3.8pt;
-            color: var(--gray);
-            font-style: italic;
-            line-height: 1.2;
-        }
-        .detail-value {
-            font-size: 6pt;
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            color: var(--black);
-        }
-
-        .address-block {
-            margin-top: 0;
-        }
-        .address-label {
-            font-size: 3.8pt;
-            color: var(--gray);
-            font-style: italic;
-            line-height: 1.2;
-        }
-        .address-value {
+        .id-badge-row { display: flex; justify-content: flex-end; margin-bottom: 0.8mm; }
+        .id-badge {
             font-size: 5.5pt;
-            font-weight: 600;
-            color: var(--black);
-            line-height: 1.3;
-            text-transform: uppercase;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            color: var(--accent);
+            font-family: 'Courier New', monospace;
         }
 
-        .payroll-section {
-            margin-top: auto;
-            padding-top: 1mm;
-            border-top: 0.3mm solid #aaa;
-        }
-        .payroll-label {
-            font-size: 4pt;
+        .name-block { margin-bottom: 0.8mm; }
+        .name-field { margin-bottom: 0.6mm; }
+        .nf-label {
+            font-size: 3.2pt;
             color: var(--gray);
             font-style: italic;
-            margin-bottom: 0.3mm;
+            line-height: 1.1;
+            display: block;
+            text-transform: uppercase;
         }
-        .payroll-value {
-            font-size: 7pt;
-            font-weight: 600;
+        .nf-value {
+            font-size: 7.5pt;
+            font-weight: 800;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
             color: var(--black);
+            line-height: 1.0;
+            display: block;
         }
-        .payroll-amount {
-            color: #16a34a;
+        .nf-value.sm { font-size: 6.5pt; font-weight: 700; }
+
+        .detail-row { display: flex; gap: 1.5mm; margin-bottom: 0.8mm; }
+        .d-cell { display: flex; flex-direction: column; flex: 1; }
+        .d-label { font-size: 3.2pt; color: var(--gray); font-style: italic; line-height: 1.2; text-transform: uppercase; }
+        .d-value { font-size: 5.5pt; font-weight: 700; letter-spacing: 0.3px; text-transform: uppercase; color: var(--black); }
+
+        /* PAYOUT STRIP */
+        .payout-strip {
+            margin-top: auto;
+            display: flex;
+            align-items: stretch;
+            border: 0.5mm solid var(--accent);
+            border-radius: 0.5mm;
+            overflow: hidden;
+        }
+        .payout-left {
+            flex: 1;
+            background: #f0f4fa;
+            padding: 0.8mm 1.2mm;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .payout-label {
+            font-size: 3pt;
+            text-transform: uppercase;
             font-weight: 700;
+            color: var(--gray);
+            letter-spacing: 0.3px;
+        }
+        .payout-provider {
+            font-size: 5.5pt;
+            font-weight: 800;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .payout-amount-box {
+            background: var(--accent);
+            padding: 0.8mm 2.5mm;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-width: 18mm;
+        }
+        .payout-amount-label {
+            font-size: 3pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: rgba(255,255,255,0.75);
+            letter-spacing: 0.5px;
+        }
+        .payout-amount-value {
+            font-size: 9pt;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: 0.5px;
         }
 
-        .print-line {
-            width: 80%;
-            border-top: 1px dashed var(--gray);
-            margin: 5mm auto;
-        }
-
+        /* ── PRINT ── */
         @page {
-            size: 86mm 54mm;
-            margin: 0;
+            size: A4 landscape;
+            margin: 5mm;
         }
 
         @media print {
-            html, body {
-                background: none;
-                padding: 0;
-                margin: 0;
-            }
-            body > .stubs-container {
+            html, body { background: #fff; }
+            .screen-header { display: none; }
+            .stubs-container {
                 display: flex;
                 flex-direction: row;
                 flex-wrap: wrap;
                 justify-content: flex-start;
                 gap: 3mm;
-                padding: 2mm;
+                padding: 0;
             }
-            .stub-page {
-                box-shadow: none;
-            }
-            .print-line {
-                width: 80%;
-                border-top: 1px dashed #999;
-                margin: 3mm auto;
-            }
-            .screen-label {
-                display: none;
-            }
+            .stub-page { box-shadow: none; }
         }
     </style>
 </head>
 <body>
 
-<div class="screen-label">Payroll Claim Stubs - {{ $funding->provider }}</div>
+<div class="screen-header">
+    <span>Payroll Claim Stubs — {{ $funding->fund_source }} ({{ $beneficiaries->count() }} beneficiaries)</span>
+    <button class="btn-print" onclick="window.print()">🖨 Print All Stubs</button>
+</div>
 
 <div class="stubs-container">
     @foreach($beneficiaries as $ben)
         <div class="stub-page">
             @include('pages.print-payroll-claim-stub-single', ['beneficiary' => $ben, 'funding' => $funding])
         </div>
-        <div class="print-line"></div>
     @endforeach
 </div>
 
