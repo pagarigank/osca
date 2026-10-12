@@ -1,5 +1,10 @@
 # OSCA Project Deployment Guide
 
+> **Before deploying to the live server, read `DEPLOYMENT_NOTES.md`.** It documents
+> the real-world gotchas (no git on the server, PHP 8.5 vs lock, `public/build`
+> ownership, the Tailwind activation fix, recovery steps). This file is the general
+> reference; the NOTES file is what you actually need on `192.168.100.201`.
+
 ## Prerequisites
 
 ### Server Environment
