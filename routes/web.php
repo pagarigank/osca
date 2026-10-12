@@ -70,6 +70,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/payout-cutoff/{id}/transactions', \App\Livewire\PayoutTransactionFlow::class);
 
     Route::get('/reports',          fn() => view('pages.reports'));
+    Route::get('/dashboard',        \App\Livewire\Dashboard::class)->name('dashboard');
+    Route::get('/pending-approvals',\App\Livewire\PendingApprovals::class)->name('pending-approvals');
     Route::get('/messages',         \App\Livewire\AdminChat::class)->name('messages');
     Route::get('/payroll-provider', \App\Livewire\PayrollProviderMaintenance::class);
     Route::get('/funding',          \App\Livewire\FundingMaintenance::class);

@@ -715,30 +715,74 @@ class PersonalInformation extends Component
 
         if ($this->seniorCitizenId) {
             $existing = SeniorCitizen::find($this->seniorCitizenId);
-            $pending = $existing->pending_updates ?? [];
-            
-            if ($existing->first_name !== $this->first_name) $pending['first_name'] = $this->first_name;
-            if ($existing->last_name !== $this->last_name) $pending['last_name'] = $this->last_name;
-            if ($existing->middle_name !== $this->middle_name) $pending['middle_name'] = $this->middle_name;
-            
-            $existingDob = $existing->date_of_birth ? $existing->date_of_birth->format('Y-m-d') : null;
-            if ($existingDob !== $this->date_of_birth) $pending['date_of_birth'] = $this->date_of_birth;
+            $user = auth()->user();
+            $requiresApproval = in_array($user->access_level_id ?? 3, [3, 4]); // 3=Encoder, 4=Viewer
 
-            $updateData['pending_updates'] = empty($pending) ? null : $pending;
-            $updateData['first_name'] = $existing->first_name;
-            $updateData['last_name'] = $existing->last_name;
-            $updateData['middle_name'] = $existing->middle_name;
-            $updateData['date_of_birth'] = $existing->date_of_birth;
-            
+            $monitoredFields = [
+                'first_name' => $this->first_name,
+                'last_name' => $this->last_name,
+                'middle_name' => $this->middle_name,
+                'date_of_birth' => $this->date_of_birth,
+                'house_no' => $this->house_no,
+                'street' => $this->street,
+                'purok_name' => $this->purok_name,
+                'purok_id' => $this->purok_id ?: null,
+                'barangay_id' => $this->barangay_id ?: null,
+                'city_municipality' => $this->city_municipality,
+                'province' => $this->province,
+            ];
+
+            $changesDetected = false;
+            $changesToQueue = [];
+
+            foreach ($monitoredFields as $field => $newValue) {
+                $oldValue = $existing->{$field};
+                if ($field === 'date_of_birth' && $oldValue) {
+                    $oldValue = $oldValue->format('Y-m-d');
+                }
+
+                if ((string)$oldValue !== (string)$newValue) {
+                    $changesDetected = true;
+                    $changesToQueue[$field] = ['old' => $oldValue, 'new' => $newValue];
+                }
+            }
+
+            if ($requiresApproval && $changesDetected) {
+                // Queue the changes in the new architecture
+                \App\Models\SeniorCitizenChangeRequest::create([
+                    'senior_citizen_id' => $existing->id,
+                    'requested_by' => $user->id,
+                    'changes' => $changesToQueue,
+                    'status' => 'PENDING',
+                ]);
+
+                // Prevent monitored fields from being saved immediately
+                foreach ($monitoredFields as $field => $val) {
+                    unset($updateData[$field]);
+                }
+
+                // Revert Livewire state so UI shows the actual approved values
+                $this->first_name = $existing->first_name;
+                $this->last_name = $existing->last_name;
+                $this->middle_name = $existing->middle_name;
+                $this->date_of_birth = $existing->date_of_birth ? $existing->date_of_birth->format('Y-m-d') : null;
+                $this->house_no = $existing->house_no;
+                $this->street = $existing->street;
+                $this->purok_name = $existing->purok_name;
+                $this->purok_id = $existing->purok_id;
+                $this->barangay_id = $existing->barangay_id;
+                $this->city_municipality = $existing->city_municipality;
+                $this->province = $existing->province;
+                
+                $this->dispatch('notify', message: 'Personal Information changes submitted for Supervisor Approval. Other fields saved.');
+            } else {
+                $this->dispatch('notify', message: 'Record updated successfully.');
+            }
+
+            $updateData['pending_updates'] = null; // Clear old legacy field if any
             $existing->update($updateData);
             $sc = $existing;
-            $this->pending_updates = $sc->pending_updates ?? [];
-            
-            // Revert Livewire state so inputs show the approved values
-            $this->first_name = $existing->first_name;
-            $this->last_name = $existing->last_name;
-            $this->middle_name = $existing->middle_name;
-            $this->date_of_birth = $existingDob;
+            $this->pending_updates = []; // No longer using legacy pending_updates view
         } else {
             $updateData['first_name'] = $this->first_name;
             $updateData['last_name'] = $this->last_name;

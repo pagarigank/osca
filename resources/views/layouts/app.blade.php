@@ -101,6 +101,19 @@
                         Dashboard
                     </a>
                 </li>
+                @if(in_array(auth()->user()->access_level_id ?? 3, [1, 2]))
+                <li>
+                    <a href="/pending-approvals" wire:navigate class="{{ request()->is('pending-approvals') ? 'active' : '' }}">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                            <polyline points="14 2 14 8 20 8"></polyline>
+                            <path d="M12 18v-6"></path>
+                            <path d="M9 15h6"></path>
+                        </svg>
+                        Approvals
+                    </a>
+                </li>
+                @endif
                 <li>
                     <a href="#"
                         class="{{ request()->is('transactions', 'personal-information') ? 'active' : '' }}">
